@@ -1,3 +1,8 @@
+global using Microsoft.EntityFrameworkCore;
+global using BankAppWithAPI.Data;
+global using BankAppWithAPI.Dtos.User;
+global using BankAppWithAPI.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
