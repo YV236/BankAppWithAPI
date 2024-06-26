@@ -1,17 +1,11 @@
-﻿namespace BankAppWithAPI.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace BankAppWithAPI.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        public int Id { get; set; }
-
-        public string UserName { get; set; }
-        public string UserSurname { get; set; }
-        public string Email { get; set; }
-        public string Address { get; set; }
-        public string PhoneNumber { get; set; }
-
-        public byte[] PasswordHash { get; set; } = new byte[0];
-        public byte[] PasswordSalt { get; set; } = new byte[0];
+        public string? UserSurname { get; set; }
+        public string? Address { get; set; }
 
         public DateTime DateOfCreation { get; set; }
         public List<BankAccountCard> AccountCards { get; set; } = new List<BankAccountCard>();
