@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BankAppWithAPI.Data
 {
@@ -31,11 +30,12 @@ namespace BankAppWithAPI.Data
                 .WithMany(c => c.AccountCards)
                 .HasForeignKey(bac => bac.CardId);
 
+            //нада поміняти довжину мейла та оновити базу
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.UserName).HasMaxLength(50).IsRequired();
-                entity.Property(e => e.Email).HasMaxLength(100).IsRequired();
+                entity.Property(e => e.Email).HasMaxLength(319).IsRequired();
                 entity.Property(e => e.Address).HasMaxLength(200);
                 entity.Property(e => e.PhoneNumber).HasMaxLength(15);
             });

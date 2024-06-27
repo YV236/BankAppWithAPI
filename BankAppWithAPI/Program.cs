@@ -2,6 +2,7 @@ global using Microsoft.EntityFrameworkCore;
 global using BankAppWithAPI.Data;
 global using BankAppWithAPI.Dtos.User;
 global using BankAppWithAPI.Models;
+global using AutoMapper;
 global using BankAppWithAPI.Services.Authentication;
 using Microsoft.AspNetCore.Identity;
 using BankAppWithAPI.Extensions;
@@ -10,10 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 // Add services to the container.
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme)
+    .AddBearerToken(IdentityConstants.BearerScheme);
 
 builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<DataContext>().AddApiEndpoints();
@@ -31,6 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.ApplyMigration();
 }
+
 
 app.UseHttpsRedirection();
 app.MapIdentityApi<User>();
