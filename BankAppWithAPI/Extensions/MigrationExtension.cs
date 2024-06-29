@@ -5,7 +5,9 @@
         public static void ApplyMigration(this IApplicationBuilder app)
         {
             using IServiceScope scope = app.ApplicationServices.CreateScope();
-            using DataContext context = scope.ServiceProvider.GetService<DataContext>();
+
+            using DataContext context = scope.ServiceProvider.GetRequiredService<DataContext>();
+
             context.Database.Migrate();
         } 
     }

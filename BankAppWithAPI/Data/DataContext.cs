@@ -11,7 +11,7 @@ namespace BankAppWithAPI.Data
 
         public DbSet<Card> Cards { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,7 +30,6 @@ namespace BankAppWithAPI.Data
                 .WithMany(c => c.AccountCards)
                 .HasForeignKey(bac => bac.CardId);
 
-            //нада поміняти довжину мейла та оновити базу
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(e => e.Email).IsUnique();
@@ -56,6 +55,7 @@ namespace BankAppWithAPI.Data
                 entity.Property(e => e.ExpiryDate).IsRequired();
             });
 
+            modelBuilder.HasDefaultSchema("UserIdentity");
         }
     }
 }

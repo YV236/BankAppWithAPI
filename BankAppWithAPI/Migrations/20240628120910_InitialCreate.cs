@@ -11,8 +11,12 @@ namespace BankAppWithAPI.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "UserIdentity");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -27,6 +31,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -35,7 +40,7 @@ namespace BankAppWithAPI.Migrations
                     DateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(319)", maxLength: 319, nullable: false),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -55,6 +60,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "BankAccounts",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -72,6 +78,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Cards",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -88,6 +95,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -102,6 +110,7 @@ namespace BankAppWithAPI.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
+                        principalSchema: "UserIdentity",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -109,6 +118,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -123,6 +133,7 @@ namespace BankAppWithAPI.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "UserIdentity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -130,6 +141,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserLogins",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -143,6 +155,7 @@ namespace BankAppWithAPI.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "UserIdentity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -150,6 +163,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -161,12 +175,14 @@ namespace BankAppWithAPI.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
+                        principalSchema: "UserIdentity",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "UserIdentity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -174,6 +190,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserTokens",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -187,6 +204,7 @@ namespace BankAppWithAPI.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "UserIdentity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -194,6 +212,7 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateTable(
                 name: "BankAccountCard",
+                schema: "UserIdentity",
                 columns: table => new
                 {
                     AccountId = table.Column<int>(type: "int", nullable: false),
@@ -207,17 +226,20 @@ namespace BankAppWithAPI.Migrations
                     table.ForeignKey(
                         name: "FK_BankAccountCard_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalSchema: "UserIdentity",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_BankAccountCard_BankAccounts_AccountId",
                         column: x => x.AccountId,
+                        principalSchema: "UserIdentity",
                         principalTable: "BankAccounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_BankAccountCard_Cards_CardId",
                         column: x => x.CardId,
+                        principalSchema: "UserIdentity",
                         principalTable: "Cards",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -225,11 +247,13 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
+                schema: "UserIdentity",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
+                schema: "UserIdentity",
                 table: "AspNetRoles",
                 column: "NormalizedName",
                 unique: true,
@@ -237,32 +261,38 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
+                schema: "UserIdentity",
                 table: "AspNetUserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserLogins_UserId",
+                schema: "UserIdentity",
                 table: "AspNetUserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserRoles_RoleId",
+                schema: "UserIdentity",
                 table: "AspNetUserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
+                schema: "UserIdentity",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_Email",
+                schema: "UserIdentity",
                 table: "AspNetUsers",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
+                schema: "UserIdentity",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true,
@@ -270,11 +300,13 @@ namespace BankAppWithAPI.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_BankAccountCard_CardId",
+                schema: "UserIdentity",
                 table: "BankAccountCard",
                 column: "CardId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BankAccountCard_UserId",
+                schema: "UserIdentity",
                 table: "BankAccountCard",
                 column: "UserId");
         }
@@ -283,34 +315,44 @@ namespace BankAppWithAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AspNetRoleClaims");
+                name: "AspNetRoleClaims",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserClaims");
+                name: "AspNetUserClaims",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
+                name: "AspNetUserLogins",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserRoles");
+                name: "AspNetUserRoles",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
+                name: "AspNetUserTokens",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "BankAccountCard");
+                name: "BankAccountCard",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "AspNetRoles",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "AspNetUsers",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "BankAccounts");
+                name: "BankAccounts",
+                schema: "UserIdentity");
 
             migrationBuilder.DropTable(
-                name: "Cards");
+                name: "Cards",
+                schema: "UserIdentity");
         }
     }
 }
