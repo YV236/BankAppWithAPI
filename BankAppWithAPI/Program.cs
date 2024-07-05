@@ -13,14 +13,23 @@ using BankAppWithAPI.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options=>
+{
+    options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey
+    });
+    options.OperationFilter<Swashbuckle.AspNetCore.Filters.SecurityRequirementsOperationFilter>();
+});
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+//builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
 
-builder.Services.AddIdentityCore<User>()
+builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<DataContext>()
     .AddApiEndpoints();
 
