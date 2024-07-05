@@ -1,4 +1,6 @@
 ﻿
+using BankAppWithAPI.Models;
+
 namespace BankAppWithAPI.Services.UserServices
 {
     public class UserService : IUserService
@@ -17,10 +19,9 @@ namespace BankAppWithAPI.Services.UserServices
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
 
-            var userId = user.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var getUser = await _context.Users.FindAsync(userId);
+            var getUser = await FindUser(user);
 
-            if(getUser == null)
+            if (getUser == null)
             {
                 serviceResponse.Data = null;
                 serviceResponse.IsSuccessful = false;
@@ -32,6 +33,14 @@ namespace BankAppWithAPI.Services.UserServices
             serviceResponse.Data = userDto;
             serviceResponse.IsSuccessful = true;
             return serviceResponse;
+        }
+        
+        public async Task<User> FindUser(ClaimsPrincipal userToFind)
+        {
+            var userId = userToFind.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var getUser = await _context.Users.FindAsync(userId);
+
+            return getUser;
         }
     }
 }

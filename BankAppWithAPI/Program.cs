@@ -1,3 +1,4 @@
+global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using BankAppWithAPI.Data;
 global using BankAppWithAPI.Dtos.User;

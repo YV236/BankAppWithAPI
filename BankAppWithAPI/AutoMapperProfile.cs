@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-
+﻿
 namespace BankAppWithAPI
 {
     public class AutoMapperProfile : Profile
