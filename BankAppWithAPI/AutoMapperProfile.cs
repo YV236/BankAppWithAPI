@@ -8,7 +8,7 @@ namespace BankAppWithAPI
         public AutoMapperProfile()
         {
             CreateMap<User, GetUserDto>();
-            CreateMap<GetUserDto, User>();
+            
         }
     }
 }

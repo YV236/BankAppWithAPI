@@ -1,11 +1,9 @@
 using Azure;
-using BankAppWithAPI.Services.UserServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
-namespace BankAppWithAPI.Controllers
+namespace BankAppWithAPI.Controllers.User
 {
     [ApiController]
     [Route("[controller]")]
@@ -29,19 +27,19 @@ namespace BankAppWithAPI.Controllers
         [Authorize]
         public async Task<ActionResult<ServiceResponse<GetUserDto>>> GetUser()
         {
-           // var response = _userService.GetUserByEmail("email");
+            var response = await _userService.GetUserInfo(User);
 
 
-            var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var user = await _context.Users.FindAsync(userId);
+            //var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            //var user = await _context.Users.FindAsync(userId);
 
-            if (user == null)
+            if (!response.IsSuccessful)
             {
-                return NotFound();
+                return NotFound(response);
             }
 
-            var userDto = _mapper.Map<GetUserDto>(user);
-            return Ok(userDto);
+            //var userDto = _mapper.Map<GetUserDto>(user);
+            return Ok(response);
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IUserService
     {
-        Task<ServiceResponse<GetUserDto>> GetUserByEmail(string email);
+        Task<ServiceResponse<GetUserDto>> GetUserInfo(ClaimsPrincipal user);
     }
 }
