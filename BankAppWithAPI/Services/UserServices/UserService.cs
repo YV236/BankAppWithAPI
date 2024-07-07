@@ -42,5 +42,31 @@ namespace BankAppWithAPI.Services.UserServices
 
             return getUser;
         }
+
+        public async Task<ServiceResponse<int>> AddMoreInfo(ClaimsPrincipal user, UserRegisterDto userRegisterDto)
+        {
+            var serviceResponse = new ServiceResponse<int>();
+
+            var getUser = await FindUser(user);
+
+            if (getUser == null)
+            {
+                serviceResponse.Data = 0;
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = "The user is not found";
+                return serviceResponse;
+            }
+
+            getUser = _mapper.Map(userRegisterDto, getUser);
+            getUser.NormalizedUserName= userRegisterDto.UserName.ToUpper();
+
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = 1;
+            serviceResponse.IsSuccessful = true;
+            serviceResponse.Message = "The data was successfully added";
+
+            return serviceResponse;
+        }
     }
 }

@@ -39,5 +39,20 @@ namespace BankAppWithAPI.Controllers.User
             //var userDto = _mapper.Map<GetUserDto>(user);
             return Ok(response);
         }
+
+        [HttpPut]
+        [Route("AddMoreInfo")]
+        [Authorize]
+        public async Task<ActionResult<ServiceResponse<int>>> AddMoreInfo(UserRegisterDto userRegisterDto)
+        {
+            var response = await _userService.AddMoreInfo(User, userRegisterDto);
+
+            if (!response.IsSuccessful)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
