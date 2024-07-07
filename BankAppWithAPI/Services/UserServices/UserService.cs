@@ -35,7 +35,7 @@ namespace BankAppWithAPI.Services.UserServices
             return serviceResponse;
         }
         
-        public async Task<User> FindUser(ClaimsPrincipal userToFind)
+        private async Task<User> FindUser(ClaimsPrincipal userToFind)
         {
             var userId = userToFind.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
             var getUser = await _context.Users.FindAsync(userId);

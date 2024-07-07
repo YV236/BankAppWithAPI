@@ -10,6 +10,8 @@ global using BankAppWithAPI.Services.Authentication;
 using Microsoft.AspNetCore.Identity;
 using BankAppWithAPI.Extensions;
 
+// TODO: delete global
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -25,7 +27,6 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<Swashbuckle.AspNetCore.Filters.SecurityRequirementsOperationFilter>();
 });
 
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddAuthorization();
 
@@ -40,6 +41,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();
 

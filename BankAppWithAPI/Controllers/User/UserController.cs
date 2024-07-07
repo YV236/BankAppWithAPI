@@ -4,28 +4,16 @@ using Microsoft.AspNetCore.Authorization;
 namespace BankAppWithAPI.Controllers.User
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UserController(IUserService userService, DataContext context, IMapper mapper)
+        : ControllerBase
     {
-        private readonly IUserService _userService;
-
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
-        public UserController(IUserService userService, DataContext context, IMapper mapper)
-        {
-            _userService = userService;
-
-            _context = context;
-            _mapper = mapper;
-        }
-
         [HttpPost]
         [Route("me")]
-        [Authorize]
         public async Task<ActionResult<ServiceResponse<GetUserDto>>> GetUser()
         {
-            var response = await _userService.GetUserInfo(User);
+            var response = await userService.GetUserInfo(User);
 
 
             //var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -42,10 +30,9 @@ namespace BankAppWithAPI.Controllers.User
 
         [HttpPut]
         [Route("AddMoreInfo")]
-        [Authorize]
         public async Task<ActionResult<ServiceResponse<int>>> AddMoreInfo(UserRegisterDto userRegisterDto)
         {
-            var response = await _userService.AddMoreInfo(User, userRegisterDto);
+            var response = await userService.AddMoreInfo(User, userRegisterDto);
 
             if (!response.IsSuccessful)
             {

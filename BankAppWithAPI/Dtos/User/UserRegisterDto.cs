@@ -1,11 +1,11 @@
 ﻿namespace BankAppWithAPI.Dtos.User
 {
-    public class UserRegisterDto
-    {
-        public string UserName { get; set; } 
-        public string? UserSurname { get; set; }
-        public string Email { get; set; }
-        public string Address { get; set; }
-        public string PhoneNumber { get; set; }
-    }
+    public record UserRegisterDto(
+        string UserName,
+        string UserSurname,
+        string Email,
+        string Address,
+        string PhoneNumber);
+    
+    // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record
 }
