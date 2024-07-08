@@ -1,4 +1,6 @@
-﻿namespace BankAppWithAPI.Services.Authentication
+﻿using BankAppWithAPI.Models;
+
+namespace BankAppWithAPI.Services.Authentication
 {
     public interface IAuthenticationService
     {

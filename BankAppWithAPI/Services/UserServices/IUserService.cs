@@ -1,4 +1,7 @@
-﻿namespace BankAppWithAPI.Services.UserServices
+﻿using BankAppWithAPI.Dtos.User;
+using BankAppWithAPI.Models;
+
+namespace BankAppWithAPI.Services.UserServices
 {
     public interface IUserService
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using BankAppWithAPI.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BankAppWithAPI.Data
 {
@@ -35,6 +36,8 @@ namespace BankAppWithAPI.Data
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.UserName).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.Email).HasMaxLength(319).IsRequired();
+                //entity.Property(e => e.UserFirstName).HasMaxLength(100);
+                //entity.Property(e => e.UserLastName).HasMaxLength(100);
                 entity.Property(e => e.Address).HasMaxLength(200);
                 entity.Property(e => e.PhoneNumber).HasMaxLength(15);
             });

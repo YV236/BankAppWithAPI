@@ -1,4 +1,6 @@
-﻿namespace BankAppWithAPI.Extensions
+﻿using BankAppWithAPI.Data;
+
+namespace BankAppWithAPI.Extensions
 {
     public static class MigrationExtension
     {

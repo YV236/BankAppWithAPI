@@ -1,5 +1,10 @@
 using Azure;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using BankAppWithAPI.Dtos.User;
+using Microsoft.AspNetCore.Mvc;
+using BankAppWithAPI.Data;
+using BankAppWithAPI.Models;
 
 namespace BankAppWithAPI.Controllers.User
 {

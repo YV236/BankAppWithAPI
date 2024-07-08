@@ -1,4 +1,7 @@
 ﻿
+using BankAppWithAPI.Data;
+using BankAppWithAPI.Models;
+
 namespace BankAppWithAPI.Services.Authentication
 {
     public class AuthenticationService : IAuthenticationService
@@ -38,21 +41,10 @@ namespace BankAppWithAPI.Services.Authentication
             return response;
         }
 
-        public async Task<bool> UserExists(string username)
+        public Task<bool> UserExists(string username)
         {
-            if (await _context.Users.AnyAsync(u => u.UserName.ToLower() == username.ToLower()))
-                return true;
-
-            return false;
+            throw new NotImplementedException();
         }
 
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
     }
 }

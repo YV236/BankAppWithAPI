@@ -1,5 +1,7 @@
-﻿
+﻿using AutoMapper;
 using BankAppWithAPI.Models;
+using BankAppWithAPI.Dtos.User;
+using BankAppWithAPI.Data;
 
 namespace BankAppWithAPI.Services.UserServices
 {

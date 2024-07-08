@@ -1,12 +1,9 @@
-global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
-global using BankAppWithAPI.Data;
-global using BankAppWithAPI.Dtos.User;
-global using BankAppWithAPI.Models;
-global using AutoMapper;
+global using BankAppWithAPI.Services.Authentication;
 global using BankAppWithAPI.Services.UserServices;
 global using System.Security.Claims;
-global using BankAppWithAPI.Services.Authentication;
+using BankAppWithAPI.Data;
+using BankAppWithAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using BankAppWithAPI.Extensions;
 
@@ -58,6 +55,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapIdentityApi<User>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
