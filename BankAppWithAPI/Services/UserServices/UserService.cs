@@ -60,7 +60,7 @@ namespace BankAppWithAPI.Services.UserServices
             }
 
             getUser = _mapper.Map(userRegisterDto, getUser);
-            getUser.NormalizedUserName= userRegisterDto.UserName.ToUpper();
+            //getUser.NormalizedUserName= userRegisterDto.UserName.ToUpper();
 
             await _context.SaveChangesAsync();
 

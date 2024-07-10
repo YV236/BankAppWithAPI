@@ -6,8 +6,8 @@ using BankAppWithAPI.Data;
 using BankAppWithAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using BankAppWithAPI.Extensions;
-
-// TODO: delete global
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,13 +24,33 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<Swashbuckle.AspNetCore.Filters.SecurityRequirementsOperationFilter>();
 });
 
-
 builder.Services.AddAuthorization();
+//builder.Services.AddAuthentication().AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//        ValidAudience = builder.Configuration["Jwt:Audience"],
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+//    };
+//}).AddCookie();
 
-//builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+//builder.Services.AddIdentity<User, IdentityRole>()
+//    .AddEntityFrameworkStores<DataContext>()
+//    .AddDefaultTokenProviders();
 
-builder.Services.AddIdentityApiEndpoints<User>()
+//builder.Services.AddIdentityApiEndpoints<User>()
+//    .AddEntityFrameworkStores<DataContext>()
+//    .AddApiEndpoints();
+
+builder.Services.AddIdentityApiEndpoints<User>().AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
+    .AddDefaultTokenProviders()
+    .AddSignInManager()
     .AddApiEndpoints();
 
 builder.Services.AddDbContext<DataContext>(options =>
@@ -38,7 +58,6 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
-
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();
@@ -48,12 +67,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
     app.ApplyMigration();
 }
 
 app.UseHttpsRedirection();
 app.MapIdentityApi<User>();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -61,3 +80,12 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+//builder.Services.AddIdentityApiEndpoints<User>()
+//    .AddEntityFrameworkStores<DataContext>()
+//    .AddApiEndpoints();
+
+
+

@@ -1,10 +1,14 @@
 ﻿namespace BankAppWithAPI.Dtos.User
 {
     public record UserRegisterDto(
-        string UserName,
-        string UserSurname,
+        string UserFirstName,
+        string UserLastName,
         string Email,
-        string Address,
+        string Street,
+        string HomeNumber,
+        string City,
+        string Country,
+        string Password,
         string PhoneNumber);
     
     // https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record
