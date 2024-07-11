@@ -9,13 +9,13 @@ using BankAppWithAPI.Models;
 namespace BankAppWithAPI.Controllers.User
 {
     [ApiController]
-    [Authorize]
     [Route("[controller]")]
     public class UserController(IUserService userService, DataContext context, IMapper mapper)
         : ControllerBase
     {
-        [HttpPost]
+        [HttpGet]
         [Route("me")]
+        [Authorize]
         public async Task<ActionResult<ServiceResponse<GetUserDto>>> GetUser()
         {
             var response = await userService.GetUserInfo(User);
@@ -33,11 +33,11 @@ namespace BankAppWithAPI.Controllers.User
             return Ok(response);
         }
 
-        [HttpPut]
-        [Route("AddMoreInfo")]
-        public async Task<ActionResult<ServiceResponse<int>>> AddMoreInfo(UserRegisterDto userRegisterDto)
+        [HttpPost]
+        [Route("Register")]
+        public async Task<ActionResult<ServiceResponse<int>>> Register(UserRegisterDto userRegisterDto)
         {
-            var response = await userService.AddMoreInfo(User, userRegisterDto);
+            var response = await userService.Register(userRegisterDto);
 
             if (!response.IsSuccessful)
             {

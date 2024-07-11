@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BankAppWithAPI.Dtos.User;
 using BankAppWithAPI.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BankAppWithAPI
 {
@@ -10,6 +11,7 @@ namespace BankAppWithAPI
         {
             CreateMap<User, GetUserDto>();
             CreateMap<UserRegisterDto, User>();
+            CreateMap<IdentityResult, ServiceResponse<object>>();
         }
     }
 }

@@ -2,16 +2,21 @@
 using BankAppWithAPI.Models;
 using BankAppWithAPI.Dtos.User;
 using BankAppWithAPI.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BankAppWithAPI.Services.UserServices
 {
     public class UserService : IUserService
     {
+
+        private readonly UserManager<Models.User> _userManager;
         private readonly IMapper _mapper;
         private readonly DataContext _context;
 
-        public UserService(IMapper mapper, DataContext context)
+        public UserService(UserManager<Models.User> userManager, IMapper mapper, DataContext context)
         {
+            _userManager = userManager;
             _mapper = mapper;
             _context = context;
         }
@@ -44,31 +49,54 @@ namespace BankAppWithAPI.Services.UserServices
 
             return getUser;
         }
+        private bool AreAllFieldsFilled(UserRegisterDto user)
+        {
+            var properties = user.GetType().GetProperties();
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(user);
+                
+                if (property.PropertyType == typeof(string) && string.IsNullOrWhiteSpace(value as string))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-        public async Task<ServiceResponse<int>> AddMoreInfo(ClaimsPrincipal user, UserRegisterDto userRegisterDto)
+        public async Task<ServiceResponse<int>> Register(UserRegisterDto userRegisterDto)
         {
             var serviceResponse = new ServiceResponse<int>();
 
-            var getUser = await FindUser(user);
-
-            if (getUser == null)
+            if (!AreAllFieldsFilled(userRegisterDto))
             {
                 serviceResponse.Data = 0;
                 serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "The user is not found";
+                serviceResponse.Message = "Error while registering. Some of the properties maybe filled incorrect";
                 return serviceResponse;
             }
 
-            getUser = _mapper.Map(userRegisterDto, getUser);
-            //getUser.NormalizedUserName= userRegisterDto.UserName.ToUpper();
+            var user = _mapper.Map<User>(userRegisterDto);
+            user.UserName = userRegisterDto.Email;
+            user.Address = $"{userRegisterDto.Street} {userRegisterDto.HomeNumber} {userRegisterDto.City} {userRegisterDto.Country}";
+            user.DateOfCreation = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(user, userRegisterDto.Password);
+
+            if (!result.Succeeded)
+            {
+                serviceResponse.Data = 0;
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = string.Join(", ", result.Errors.Select(e => e.Description));
+                return serviceResponse;
+            }
 
             serviceResponse.Data = 1;
             serviceResponse.IsSuccessful = true;
-            serviceResponse.Message = "The data was successfully added";
+            serviceResponse.Message = "User registered successfully";
 
             return serviceResponse;
         }
+
     }
 }
