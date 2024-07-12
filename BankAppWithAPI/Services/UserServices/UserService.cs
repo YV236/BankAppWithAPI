@@ -4,6 +4,7 @@ using BankAppWithAPI.Dtos.User;
 using BankAppWithAPI.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace BankAppWithAPI.Services.UserServices
 {
@@ -49,6 +50,13 @@ namespace BankAppWithAPI.Services.UserServices
 
             return getUser;
         }
+
+        private bool IsValidEmail(string email)
+        {
+            var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return Regex.IsMatch(email, emailPattern);
+        }
+
         private bool AreAllFieldsFilled(UserRegisterDto user)
         {
             var properties = user.GetType().GetProperties();
@@ -73,6 +81,12 @@ namespace BankAppWithAPI.Services.UserServices
                 serviceResponse.Data = 0;
                 serviceResponse.IsSuccessful = false;
                 serviceResponse.Message = "Error while registering. Some of the properties maybe filled incorrect";
+                return serviceResponse;
+            }else if (!IsValidEmail(userRegisterDto.Email))
+            {
+                serviceResponse.Data = 0;
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = $"Error while registering. Email '{userRegisterDto.Email}' must to contain '@' and '.'";
                 return serviceResponse;
             }
 
