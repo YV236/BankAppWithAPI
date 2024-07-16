@@ -25,27 +25,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddAuthorization();
-//builder.Services.AddAuthentication().AddJwtBearer(options =>
-//{
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuer = true,
-//        ValidateAudience = true,
-//        ValidateLifetime = true,
-//        ValidateIssuerSigningKey = true,
-//        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//        ValidAudience = builder.Configuration["Jwt:Audience"],
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-//    };
-//}).AddCookie();
-
-//builder.Services.AddIdentity<User, IdentityRole>()
-//    .AddEntityFrameworkStores<DataContext>()
-//    .AddDefaultTokenProviders();
-
-//builder.Services.AddIdentityApiEndpoints<User>()
-//    .AddEntityFrameworkStores<DataContext>()
-//    .AddApiEndpoints();
 
 builder.Services.AddIdentityApiEndpoints<User>().AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
@@ -81,11 +60,6 @@ app.MapControllers();
 
 app.Run();
 
-
-
-//builder.Services.AddIdentityApiEndpoints<User>()
-//    .AddEntityFrameworkStores<DataContext>()
-//    .AddApiEndpoints();
 
 
 

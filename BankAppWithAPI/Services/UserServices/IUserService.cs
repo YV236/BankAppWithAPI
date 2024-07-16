@@ -7,5 +7,6 @@ namespace BankAppWithAPI.Services.UserServices
     {
         Task<ServiceResponse<GetUserDto>> GetUserInfo(ClaimsPrincipal user);
         Task<ServiceResponse<int>> Register(UserRegisterDto userRegisterDto);
+        Task<ServiceResponse<GetUserDto>> UpdateUserInfo(ClaimsPrincipal user, UpdateUserDto userUpdateDto);
     }
 }

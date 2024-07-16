@@ -12,6 +12,7 @@ namespace BankAppWithAPI
             CreateMap<User, GetUserDto>();
             CreateMap<UserRegisterDto, User>();
             CreateMap<IdentityResult, ServiceResponse<object>>();
+            CreateMap<UpdateUserDto, User>();
         }
     }
 }

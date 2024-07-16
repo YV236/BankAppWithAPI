@@ -112,5 +112,19 @@ namespace BankAppWithAPI.Services.UserServices
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<GetUserDto>> UpdateUserInfo(ClaimsPrincipal user, UpdateUserDto userUpdateDto)
+        {
+            var serviceResponse = new ServiceResponse<GetUserDto>();
+            var getUser = await FindUser(user);
+
+            _mapper.Map(userUpdateDto, getUser);
+            getUser.Address = $"{userUpdateDto.Street} {userUpdateDto.HomeNumber} {userUpdateDto.City} {userUpdateDto.Country}";
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = _mapper.Map<GetUserDto>(getUser);
+            serviceResponse.IsSuccessful = true;
+            serviceResponse.Message = "The data successfully updated";
+            return serviceResponse;
+        }
     }
 }

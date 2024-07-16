@@ -41,7 +41,21 @@ namespace BankAppWithAPI.Controllers.User
 
             if (!response.IsSuccessful)
             {
-                return NotFound(response);
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPut("UpdateInfo")]
+        [Authorize]
+        public async Task<ActionResult<ServiceResponse<int>>> UpdateInfo(UpdateUserDto userUpdateDto)
+        {
+            var response = await userService.UpdateUserInfo(User, userUpdateDto);
+
+            if (!response.IsSuccessful)
+            {
+                return BadRequest(response);
             }
 
             return Ok(response);
