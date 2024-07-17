@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using BankAppWithAPI.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BankAppWithAPI.Services.BankAccountService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IBankAccountService, BankAccountService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();
