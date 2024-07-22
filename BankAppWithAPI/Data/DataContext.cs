@@ -118,7 +118,6 @@ namespace BankAppWithAPI.Data
                 entity.Property(e => e.ExpiryDate).IsRequired();
             });
 
-            modelBuilder.HasDefaultSchema("UserIdentity");
         }
 
 
