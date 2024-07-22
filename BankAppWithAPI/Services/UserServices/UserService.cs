@@ -72,6 +72,21 @@ namespace BankAppWithAPI.Services.UserServices
             return true;
         }
 
+        private bool AreAllFieldsFilled(UpdateUserDto user)
+        {
+            var properties = user.GetType().GetProperties();
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(user);
+
+                if (property.PropertyType == typeof(string) && string.IsNullOrWhiteSpace(value as string))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public async Task<ServiceResponse<int>> Register(UserRegisterDto userRegisterDto)
         {
             var serviceResponse = new ServiceResponse<int>();
@@ -116,6 +131,14 @@ namespace BankAppWithAPI.Services.UserServices
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
             var getUser = await FindUser(user);
+
+            if (!AreAllFieldsFilled(userUpdateDto))
+            {
+                serviceResponse.Data = null;
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = "Error while updating. Some of the properties maybe filled incorrect";
+                return serviceResponse;
+            }
 
             _mapper.Map(userUpdateDto, getUser);
             getUser.Address = $"{userUpdateDto.Street} {userUpdateDto.HomeNumber} {userUpdateDto.City} {userUpdateDto.Country}";

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAppWithAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240628120910_InitialCreate")]
+    [Migration("20240722131523_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -62,19 +62,24 @@ namespace BankAppWithAPI.Migrations
 
             modelBuilder.Entity("BankAppWithAPI.Models.BankAccountCard", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
                     b.Property<int>("CardId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("AccountId", "CardId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("CardId");
 
@@ -169,13 +174,18 @@ namespace BankAppWithAPI.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserFirstName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserLastName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("UserSurname")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -331,14 +341,12 @@ namespace BankAppWithAPI.Migrations
                     b.HasOne("BankAppWithAPI.Models.BankAccount", "Account")
                         .WithMany("AccountCards")
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BankAppWithAPI.Models.Card", "Card")
                         .WithMany("AccountCards")
                         .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BankAppWithAPI.Models.User", null)
                         .WithMany("AccountCards")

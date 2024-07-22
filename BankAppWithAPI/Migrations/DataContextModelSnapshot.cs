@@ -59,19 +59,24 @@ namespace BankAppWithAPI.Migrations
 
             modelBuilder.Entity("BankAppWithAPI.Models.BankAccountCard", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
                     b.Property<int>("CardId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("AccountId", "CardId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
 
                     b.HasIndex("CardId");
 
@@ -333,14 +338,12 @@ namespace BankAppWithAPI.Migrations
                     b.HasOne("BankAppWithAPI.Models.BankAccount", "Account")
                         .WithMany("AccountCards")
                         .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BankAppWithAPI.Models.Card", "Card")
                         .WithMany("AccountCards")
                         .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BankAppWithAPI.Models.User", null)
                         .WithMany("AccountCards")

@@ -35,7 +35,8 @@ namespace BankAppWithAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserSurname = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserFirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    UserLastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     DateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -215,14 +216,15 @@ namespace BankAppWithAPI.Migrations
                 schema: "UserIdentity",
                 columns: table => new
                 {
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    CardId = table.Column<int>(type: "int", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<int>(type: "int", nullable: true),
+                    CardId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BankAccountCard", x => new { x.AccountId, x.CardId });
+                    table.PrimaryKey("PK_BankAccountCard", x => x.Id);
                     table.ForeignKey(
                         name: "FK_BankAccountCard_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -235,14 +237,14 @@ namespace BankAppWithAPI.Migrations
                         principalSchema: "UserIdentity",
                         principalTable: "BankAccounts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_BankAccountCard_Cards_CardId",
                         column: x => x.CardId,
                         principalSchema: "UserIdentity",
                         principalTable: "Cards",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -297,6 +299,12 @@ namespace BankAppWithAPI.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BankAccountCard_AccountId",
+                schema: "UserIdentity",
+                table: "BankAccountCard",
+                column: "AccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BankAccountCard_CardId",

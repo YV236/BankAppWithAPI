@@ -26,6 +26,9 @@ namespace BankAppWithAPI.Services.BankAccountService
 
             // Додавання нового рахунку в базу даних
             _context.BankAccounts.Add(newBankAccount);
+            _context.BankAccountCards.Add(new BankAccountCard { 
+                AccountId=newBankAccount.Id,
+                Account=newBankAccount});
             await _context.SaveChangesAsync();
 
             serviceResponse.Data = newBankAccount;
@@ -55,7 +58,7 @@ namespace BankAppWithAPI.Services.BankAccountService
         {
             // Генерація випадкового числа певної довжини, наприклад, 10 цифр
             var random = new Random();
-            return random.Next(0, 999999999).ToString("D10");
+            return random.Next(100000000, 999999999).ToString("D10");
         }
     }
 }
