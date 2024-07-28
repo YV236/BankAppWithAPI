@@ -9,6 +9,7 @@ using BankAppWithAPI.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BankAppWithAPI.Services.BankAccountService;
+using BankAppWithAPI.Services.Card;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBankAccountService, BankAccountService>();
+builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();

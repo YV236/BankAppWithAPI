@@ -5,6 +5,6 @@ namespace BankAppWithAPI.Services.BankAccountService
 {
     public interface IBankAccountService
     {
-        Task<ServiceResponse<BankAccount>> CreateBankAccount(CreateBankAccountDto bankAccount);
+        Task<ServiceResponse<GetBankAccountDto>> CreateBankAccount(CreateBankAccountDto bankAccount);
     }
 }

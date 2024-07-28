@@ -1,15 +1,16 @@
-﻿using BankAppWithAPI.Data;
+﻿using AutoMapper;
+using BankAppWithAPI.Data;
 using BankAppWithAPI.Dtos.BankAccount;
 using BankAppWithAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankAppWithAPI.Services.BankAccountService
 {
-    public class BankAccountService(DataContext _context) : IBankAccountService
+    public class BankAccountService(DataContext _context, IHttpContextAccessor _httpContextAccessor, IMapper _mapper) : IBankAccountService
     {
-        public async Task<ServiceResponse<BankAccount>> CreateBankAccount(CreateBankAccountDto bankAccountDto)
+        public async Task<ServiceResponse<GetBankAccountDto>> CreateBankAccount(CreateBankAccountDto bankAccountDto)
         {
-            var serviceResponse = new ServiceResponse<BankAccount>();
+            var serviceResponse = new ServiceResponse<GetBankAccountDto>();
 
             // Генерація унікального номера рахунку
             var accountNumber = await GenerateUniqueAccountNumber();
@@ -23,15 +24,20 @@ namespace BankAppWithAPI.Services.BankAccountService
                 DateOfCreation = DateTime.UtcNow,
                 // Додаткові поля можна заповнити тут
             };
+            var bankAccountCard = new BankAccountCard();
+            bankAccountCard.Account = newBankAccount;
+            bankAccountCard.User = await _context.Users.Include(u => u.Card)
+                .FirstOrDefaultAsync(u => u.Id == FindUserId());
+            bankAccountCard.Card = bankAccountCard.User.Card;
 
             // Додавання нового рахунку в базу даних
+            _context.BankAccountCards.Add(bankAccountCard);
             _context.BankAccounts.Add(newBankAccount);
-            _context.BankAccountCards.Add(new BankAccountCard { 
-                AccountId=newBankAccount.Id,
-                Account=newBankAccount});
             await _context.SaveChangesAsync();
 
-            serviceResponse.Data = newBankAccount;
+            var getBankAccount= _mapper.Map<GetBankAccountDto>(newBankAccount);
+
+            serviceResponse.Data = getBankAccount;
             serviceResponse.IsSuccessful = true;
             return serviceResponse;
         }
@@ -60,5 +66,8 @@ namespace BankAppWithAPI.Services.BankAccountService
             var random = new Random();
             return random.Next(100000000, 999999999).ToString("D10");
         }
+
+        private string FindUserId() => _httpContextAccessor.HttpContext!.User
+            .FindFirstValue(ClaimTypes.NameIdentifier)!;
     }
 }

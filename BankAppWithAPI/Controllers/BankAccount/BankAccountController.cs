@@ -16,7 +16,7 @@ namespace BankAppWithAPI.Controllers.BankAccount
     public class BankAccountController(IBankAccountService bankAccountService) : ControllerBase
     {
         [HttpPost("create")]
-        public async Task<ActionResult<ServiceResponse<Models.BankAccount>>> CreateBankAccount(CreateBankAccountDto createBankAccountDto)
+        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> CreateBankAccount(CreateBankAccountDto createBankAccountDto)
         {
             var response = await bankAccountService.CreateBankAccount(createBankAccountDto);
 
