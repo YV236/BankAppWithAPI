@@ -4,7 +4,7 @@ using BankAppWithAPI.Dtos.Card;
 using BankAppWithAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BankAppWithAPI.Services.Card
+namespace BankAppWithAPI.Services.CardService
 {
     public class CardService : ICardService
     {
@@ -68,7 +68,7 @@ namespace BankAppWithAPI.Services.Card
 
             serviceResponse.Data = _mapper.Map<GetCardDto>(card);
             serviceResponse.IsSuccessful = true;
-            serviceResponse.Message = "Card created successfully";
+            serviceResponse.Message = "CardService created successfully";
             return serviceResponse;
         }
 

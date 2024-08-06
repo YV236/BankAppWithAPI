@@ -52,7 +52,7 @@ namespace BankAppWithAPI.Data
                 .IsRequired(false);
 
             //modelBuilder.Entity<User>()
-            //    .HasOne(u => u.Card)
+            //    .HasOne(u => u.CardService)
             //    .WithOne(c => c.User)
             //    .HasForeignKey<User>(u => u.CardId)
             //    .OnDelete(DeleteBehavior.Restrict)
@@ -80,7 +80,7 @@ namespace BankAppWithAPI.Data
                 entity.Property(e => e.DateOfCreation).IsRequired();
             });
 
-            // Конфігурація для Card
+            // Конфігурація для CardService
             modelBuilder.Entity<Card>(entity =>
             {
                 entity.Property(e => e.CardNumber).HasMaxLength(16).IsRequired();
@@ -108,7 +108,7 @@ namespace BankAppWithAPI.Data
         // .IsRequired(false);
 
         //     modelBuilder.Entity<BankAccountCard>()
-        //.HasOne(bac => bac.Card)
+        //.HasOne(bac => bac.CardService)
         //.WithMany(c => c.AccountCards)
         //.HasForeignKey(bac => bac.CardId)
         //.OnDelete(DeleteBehavior.Restrict)
@@ -133,7 +133,7 @@ namespace BankAppWithAPI.Data
         //         entity.Property(e => e.DateOfCreation).IsRequired();
         //     });
 
-        //     modelBuilder.Entity<Card>(entity =>
+        //     modelBuilder.Entity<CardService>(entity =>
         //     {
         //         entity.Property(e => e.CardNumber).HasMaxLength(16).IsRequired();
         //         entity.Property(e => e.CVVHash).IsRequired();

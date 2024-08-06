@@ -87,7 +87,7 @@ namespace BankAppWithAPI.Migrations
                     b.ToTable("BankAccountCards");
                 });
 
-            modelBuilder.Entity("BankAppWithAPI.Models.Card", b =>
+            modelBuilder.Entity("BankAppWithAPI.Models.CardService", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -357,7 +357,7 @@ namespace BankAppWithAPI.Migrations
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("BankAppWithAPI.Models.Card", "Card")
+                    b.HasOne("BankAppWithAPI.Models.CardService", "CardService")
                         .WithMany("AccountCards")
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -369,16 +369,16 @@ namespace BankAppWithAPI.Migrations
 
                     b.Navigation("Account");
 
-                    b.Navigation("Card");
+                    b.Navigation("CardService");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BankAppWithAPI.Models.Card", b =>
+            modelBuilder.Entity("BankAppWithAPI.Models.CardService", b =>
                 {
                     b.HasOne("BankAppWithAPI.Models.User", "User")
-                        .WithOne("Card")
-                        .HasForeignKey("BankAppWithAPI.Models.Card", "UserId")
+                        .WithOne("CardService")
+                        .HasForeignKey("BankAppWithAPI.Models.CardService", "UserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("User");
@@ -440,7 +440,7 @@ namespace BankAppWithAPI.Migrations
                     b.Navigation("AccountCards");
                 });
 
-            modelBuilder.Entity("BankAppWithAPI.Models.Card", b =>
+            modelBuilder.Entity("BankAppWithAPI.Models.CardService", b =>
                 {
                     b.Navigation("AccountCards");
                 });
@@ -449,7 +449,7 @@ namespace BankAppWithAPI.Migrations
                 {
                     b.Navigation("AccountCards");
 
-                    b.Navigation("Card");
+                    b.Navigation("CardService");
                 });
 #pragma warning restore 612, 618
         }
