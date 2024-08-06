@@ -27,6 +27,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddIdentityApiEndpoints<User>().AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
