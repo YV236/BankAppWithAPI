@@ -9,7 +9,7 @@ using BankAppWithAPI.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BankAppWithAPI.Services.BankAccountService;
-using BankAppWithAPI.Services.Card;
+using BankAppWithAPI.Services.CardService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +27,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddIdentityApiEndpoints<User>().AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DataContext>()
