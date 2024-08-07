@@ -3,7 +3,7 @@
     public class BankAccount
     {
         public int Id { get; set; }
-        public string AccountNumber { get; set; } = string.Empty;
+        public string IBAN { get; set; } = string.Empty;
         public decimal Balance { get; set; }
         public string AccountPriority { get; set; } = string.Empty;
         public string AccountName { get; set; } = "MyBankAccount";

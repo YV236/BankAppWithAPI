@@ -52,7 +52,7 @@ namespace BankAppWithAPI.Services.CardService
             CreatePinHash(pinCode, out byte[] pinHash, out byte[] pinSalt);
             CreateCVVHash(pinCode, out byte[] CVVHash, out byte[] CVVSalt);
 
-            var card = new Models.Card
+            var card = new Card
             {
                 CardNumber = cardNumber,
                 PinHash = pinHash,

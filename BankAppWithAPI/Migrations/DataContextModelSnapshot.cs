@@ -35,21 +35,21 @@ namespace BankAppWithAPI.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("AccountNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("AccountPriority")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("DateOfCreation")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("IBAN")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -84,7 +84,7 @@ namespace BankAppWithAPI.Migrations
                     b.ToTable("BankAccountCards");
                 });
 
-            modelBuilder.Entity("BankAppWithAPI.Models.CardService", b =>
+            modelBuilder.Entity("BankAppWithAPI.Models.Card", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -354,7 +354,7 @@ namespace BankAppWithAPI.Migrations
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("BankAppWithAPI.Models.CardService", "CardService")
+                    b.HasOne("BankAppWithAPI.Models.Card", "Card")
                         .WithMany("AccountCards")
                         .HasForeignKey("CardId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -366,16 +366,16 @@ namespace BankAppWithAPI.Migrations
 
                     b.Navigation("Account");
 
-                    b.Navigation("CardService");
+                    b.Navigation("Card");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BankAppWithAPI.Models.CardService", b =>
+            modelBuilder.Entity("BankAppWithAPI.Models.Card", b =>
                 {
                     b.HasOne("BankAppWithAPI.Models.User", "User")
-                        .WithOne("CardService")
-                        .HasForeignKey("BankAppWithAPI.Models.CardService", "UserId")
+                        .WithOne("Card")
+                        .HasForeignKey("BankAppWithAPI.Models.Card", "UserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("User");
@@ -437,7 +437,7 @@ namespace BankAppWithAPI.Migrations
                     b.Navigation("AccountCards");
                 });
 
-            modelBuilder.Entity("BankAppWithAPI.Models.CardService", b =>
+            modelBuilder.Entity("BankAppWithAPI.Models.Card", b =>
                 {
                     b.Navigation("AccountCards");
                 });
@@ -446,7 +446,7 @@ namespace BankAppWithAPI.Migrations
                 {
                     b.Navigation("AccountCards");
 
-                    b.Navigation("CardService");
+                    b.Navigation("Card");
                 });
 #pragma warning restore 612, 618
         }
