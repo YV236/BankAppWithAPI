@@ -3,6 +3,7 @@ using BankAppWithAPI.Data;
 using BankAppWithAPI.Dtos.Card;
 using BankAppWithAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace BankAppWithAPI.Services.CardService
 {
@@ -23,52 +24,72 @@ namespace BankAppWithAPI.Services.CardService
         {
             var serviceResponse = new ServiceResponse<GetCardDto>();
 
+            if (!pinCode.All(char.IsDigit) || pinCode.Length != 4)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = $"PinCode {pinCode} in not valid. It must contain digits and contain 4 numbers";
+                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
+                return serviceResponse;
+            }
+
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
                 serviceResponse.IsSuccessful = false;
                 serviceResponse.Message = "User not found";
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
                 return serviceResponse;
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.Include(u => u.Card).FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)
             {
                 serviceResponse.IsSuccessful = false;
                 serviceResponse.Message = "User not found";
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
                 return serviceResponse;
-            }
-
-            if (user.Card != null)
+            }else if (user.Card != null)
             {
                 serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "User already has a card";
+                serviceResponse.Message = "The user has a card already.";
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 return serviceResponse;
             }
 
-            var cardNumber = await GenerateUniqueCardNumber();
-
-            CreatePinHash(pinCode, out byte[] pinHash, out byte[] pinSalt);
-            CreateCVVHash(pinCode, out byte[] CVVHash, out byte[] CVVSalt);
-
-            var card = new Card
+            try
             {
-                CardNumber = cardNumber,
-                PinHash = pinHash,
-                PinSalt = pinSalt,
-                CVVHash = CVVHash,
-                CVVSalt = CVVSalt,
-                ExpiryDate = DateTime.UtcNow.AddYears(10),
-                User = user
-            };
+                var cardNumber = await GenerateUniqueCardNumber();
 
-            _context.Cards.Add(card);
-            await _context.SaveChangesAsync();
+                CreatePinHash(pinCode, out byte[] pinHash, out byte[] pinSalt);
+                CreateCVVHash(pinCode, out byte[] CVVHash, out byte[] CVVSalt);
 
-            serviceResponse.Data = _mapper.Map<GetCardDto>(card);
-            serviceResponse.IsSuccessful = true;
-            serviceResponse.Message = "CardService created successfully";
+                var card = new Card
+                {
+                    CardNumber = cardNumber,
+                    PinHash = pinHash,
+                    PinSalt = pinSalt,
+                    CVVHash = CVVHash,
+                    CVVSalt = CVVSalt,
+                    ExpiryDate = DateTime.UtcNow.AddYears(10),
+                    User = user
+                };
+
+                _context.Cards.Add(card);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = _mapper.Map<GetCardDto>(card);
+                serviceResponse.IsSuccessful = true;
+                serviceResponse.Message = "Card created successfully";
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = ex.Message;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+            }
+
             return serviceResponse;
         }
 

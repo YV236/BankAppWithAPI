@@ -5,41 +5,52 @@ using BankAppWithAPI.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace BankAppWithAPI.Services.UserServices
 {
     public class UserService : IUserService
     {
 
-        private readonly UserManager<Models.User> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly DataContext _context;
 
-        public UserService(UserManager<Models.User> userManager, IMapper mapper, DataContext context)
+        public UserService(UserManager<User> userManager, IMapper mapper, DataContext context)
         {
             _userManager = userManager;
             _mapper = mapper;
             _context = context;
         }
 
-
         public async Task<ServiceResponse<GetUserDto>> GetUserInfo(ClaimsPrincipal user)
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
 
-            var getUser = await FindUser(user);
-
-            if (getUser == null)
+            try
             {
-                serviceResponse.Data = null;
+                var getUser = await FindUser(user);
+
+                if (getUser == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.IsSuccessful = false;
+                    serviceResponse.Message = "The user is not found";
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return serviceResponse;
+                }
+
+                var userDto = _mapper.Map<GetUserDto>(getUser);
+                serviceResponse.Data = userDto;
+                serviceResponse.IsSuccessful = true;
+            }
+            catch (Exception ex)
+            {
                 serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "The user is not found";
-                return serviceResponse;
+                serviceResponse.Message = ex.Message;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
             }
 
-            var userDto = _mapper.Map<GetUserDto>(getUser);
-            serviceResponse.Data = userDto;
-            serviceResponse.IsSuccessful = true;
             return serviceResponse;
         }
         
@@ -96,12 +107,21 @@ namespace BankAppWithAPI.Services.UserServices
                 serviceResponse.Data = 0;
                 serviceResponse.IsSuccessful = false;
                 serviceResponse.Message = "Error while registering. Some of the properties maybe filled incorrect";
+                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
                 return serviceResponse;
             }else if (!IsValidEmail(userRegisterDto.Email))
             {
                 serviceResponse.Data = 0;
                 serviceResponse.IsSuccessful = false;
                 serviceResponse.Message = $"Error while registering. Email '{userRegisterDto.Email}' must to contain '@' and '.'";
+                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
+                return serviceResponse;
+            }else if(!userRegisterDto.PhoneNumber.All(char.IsDigit))
+            {
+                serviceResponse.Data = 0;
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = $"Error while registering. Phone number '{userRegisterDto.PhoneNumber}' must to contain numbers only";
+                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
                 return serviceResponse;
             }
 
@@ -117,6 +137,7 @@ namespace BankAppWithAPI.Services.UserServices
                 serviceResponse.Data = 0;
                 serviceResponse.IsSuccessful = false;
                 serviceResponse.Message = string.Join(", ", result.Errors.Select(e => e.Description));
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                 return serviceResponse;
             }
 
@@ -137,6 +158,15 @@ namespace BankAppWithAPI.Services.UserServices
                 serviceResponse.Data = null;
                 serviceResponse.IsSuccessful = false;
                 serviceResponse.Message = "Error while updating. Some of the properties maybe filled incorrect";
+                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
+                return serviceResponse;
+            }
+            else if (!userUpdateDto.PhoneNumber.All(char.IsDigit))
+            {
+                serviceResponse.Data = null;
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must to contain numbers only";
+                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
                 return serviceResponse;
             }
 

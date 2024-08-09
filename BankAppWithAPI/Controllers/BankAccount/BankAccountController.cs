@@ -20,12 +20,7 @@ namespace BankAppWithAPI.Controllers.BankAccount
         {
             var response = await bankAccountService.CreateBankAccount(createBankAccountDto);
 
-            if (!response.IsSuccessful)
-            {
-                return NotFound(response);
-            }
-
-            return Ok(response);
+            return StatusCode((int)response.StatusCode, response);
         }
     }
 }

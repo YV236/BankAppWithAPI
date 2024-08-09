@@ -50,13 +50,6 @@ namespace BankAppWithAPI.Data
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
-            //modelBuilder.Entity<User>()
-            //    .HasOne(u => u.Card)
-            //    .WithOne(c => c.User)
-            //    .HasForeignKey<User>(u => u.CardId)
-            //    .OnDelete(DeleteBehavior.Restrict)
-            //    .IsRequired(false);
-
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(e => e.Email).IsUnique();

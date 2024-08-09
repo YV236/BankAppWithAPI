@@ -18,12 +18,7 @@ namespace BankAppWithAPI.Controllers.Card
         {
             var response = await cardService.CreateCard(pinCode);
 
-            if (!response.IsSuccessful)
-            {
-                return BadRequest(response);
-            }
-
-            return Ok(response);
+            return StatusCode((int)response.StatusCode, response);
         }
     }
 }

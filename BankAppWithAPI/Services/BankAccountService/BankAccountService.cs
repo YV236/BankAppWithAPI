@@ -3,6 +3,7 @@ using BankAppWithAPI.Data;
 using BankAppWithAPI.Dtos.BankAccount;
 using BankAppWithAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Numerics;
 using System.Text;
 
@@ -14,30 +15,40 @@ namespace BankAppWithAPI.Services.BankAccountService
         {
             var serviceResponse = new ServiceResponse<GetBankAccountDto>();
 
-            var iban = await GenerateUniqueIBAN();
-
-            var newBankAccount = new BankAccount
+            try
             {
-                IBAN = iban,
-                AccountPriority = bankAccountDto.AccountPriority,
-                AccountName = bankAccountDto.AccountName,
-                DateOfCreation = DateTime.UtcNow,
-            };
+                var iban = await GenerateUniqueIBAN();
 
-            var bankAccountCard = new BankAccountCard();
-            bankAccountCard.Account = newBankAccount;
-            bankAccountCard.User = await _context.Users.Include(u => u.Card)
-                .FirstOrDefaultAsync(u => u.Id == FindUserId());
-            bankAccountCard.Card = bankAccountCard.User.Card;
+                var newBankAccount = new BankAccount
+                {
+                    IBAN = iban,
+                    AccountPriority = bankAccountDto.AccountPriority,
+                    AccountName = bankAccountDto.AccountName,
+                    DateOfCreation = DateTime.UtcNow,
+                };
 
-            _context.BankAccountCards.Add(bankAccountCard);
-            _context.BankAccounts.Add(newBankAccount);
-            await _context.SaveChangesAsync();
+                var bankAccountCard = new BankAccountCard();
+                bankAccountCard.Account = newBankAccount;
+                bankAccountCard.User = await _context.Users.Include(u => u.Card)
+                    .FirstOrDefaultAsync(u => u.Id == FindUserId());
+                bankAccountCard.Card = bankAccountCard.User.Card;
 
-            var getBankAccount= _mapper.Map<GetBankAccountDto>(newBankAccount);
+                _context.BankAccountCards.Add(bankAccountCard);
+                _context.BankAccounts.Add(newBankAccount);
+                await _context.SaveChangesAsync();
 
-            serviceResponse.Data = getBankAccount;
-            serviceResponse.IsSuccessful = true;
+                var getBankAccount = _mapper.Map<GetBankAccountDto>(newBankAccount);
+
+                serviceResponse.Data = getBankAccount;
+                serviceResponse.IsSuccessful = true;
+            }catch(Exception ex)
+            {
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = ex.Message;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+            }
+
+
             return serviceResponse;
         }
 

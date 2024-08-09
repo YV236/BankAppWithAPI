@@ -20,17 +20,7 @@ namespace BankAppWithAPI.Controllers.User
         {
             var response = await userService.GetUserInfo(User);
 
-
-            //var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            //var user = await _context.Users.FindAsync(userId);
-
-            if (!response.IsSuccessful)
-            {
-                return NotFound(response);
-            }
-
-            //var userDto = _mapper.Map<GetUserDto>(user);
-            return Ok(response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
         [HttpPost]
@@ -39,12 +29,7 @@ namespace BankAppWithAPI.Controllers.User
         {
             var response = await userService.Register(userRegisterDto);
 
-            if (!response.IsSuccessful)
-            {
-                return BadRequest(response);
-            }
-
-            return Ok(response);
+            return StatusCode((int)response.StatusCode, response);
         }
 
         [HttpPut("UpdateInfo")]
@@ -53,12 +38,7 @@ namespace BankAppWithAPI.Controllers.User
         {
             var response = await userService.UpdateUserInfo(User, userUpdateDto);
 
-            if (!response.IsSuccessful)
-            {
-                return BadRequest(response);
-            }
-
-            return Ok(response);
+            return StatusCode((int)response.StatusCode, response);
         }
     }
 }
