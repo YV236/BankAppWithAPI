@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string CardNumber { get; set; } = string.Empty;
+        public PaymentSystem? PaymentSystem { get; set; } 
         public byte[] PinHash { get; set; } = new byte[0];
         public byte[] PinSalt { get; set; } = new byte[0];
         public byte[] CVVHash { get; set; } = new byte[0];

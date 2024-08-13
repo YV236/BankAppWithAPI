@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankAppWithAPI.Services.UserServices
 {
@@ -57,7 +58,7 @@ namespace BankAppWithAPI.Services.UserServices
         private async Task<User> FindUser(ClaimsPrincipal userToFind)
         {
             var userId = userToFind.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var getUser = await _context.Users.FindAsync(userId);
+            var getUser = await _context.Users.Include(u => u.Card).FirstOrDefaultAsync(u => u.Id == userId);
 
             return getUser;
         }

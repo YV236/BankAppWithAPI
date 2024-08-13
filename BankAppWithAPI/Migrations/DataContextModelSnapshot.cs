@@ -48,8 +48,8 @@ namespace BankAppWithAPI.Migrations
 
                     b.Property<string>("IBAN")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(28)
+                        .HasColumnType("nvarchar(28)");
 
                     b.HasKey("Id");
 
@@ -107,6 +107,9 @@ namespace BankAppWithAPI.Migrations
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<byte>("PaymentSystem")
+                        .HasColumnType("tinyint");
 
                     b.Property<byte[]>("PinHash")
                         .IsRequired()

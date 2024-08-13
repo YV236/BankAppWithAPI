@@ -1,4 +1,6 @@
-﻿namespace BankAppWithAPI.Dtos.User
+﻿using BankAppWithAPI.Dtos.Card;
+
+namespace BankAppWithAPI.Dtos.User
 {
     public class GetUserDto
     {
@@ -8,5 +10,6 @@
         public string? Email { get; set; }
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
+        public GetCardDto? Card { get; set; }
     }
 }

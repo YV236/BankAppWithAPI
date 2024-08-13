@@ -14,9 +14,9 @@ namespace BankAppWithAPI.Controllers.Card
     public class CardController(ICardService cardService) : ControllerBase
     {
         [HttpPost("create")]
-        public async Task<ActionResult<ServiceResponse<GetCardDto>>> CreateCard(string pinCode)
+        public async Task<ActionResult<ServiceResponse<GetCardDto>>> CreateCard(AddCardDto addCardDto)
         {
-            var response = await cardService.CreateCard(pinCode);
+            var response = await cardService.CreateCard(addCardDto);
 
             return StatusCode((int)response.StatusCode, response);
         }

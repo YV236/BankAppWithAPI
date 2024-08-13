@@ -5,6 +5,6 @@ namespace BankAppWithAPI.Services.CardService
 {
     public interface ICardService
     {
-        Task<ServiceResponse<GetCardDto>> CreateCard(string pinCode);
+        Task<ServiceResponse<GetCardDto>> CreateCard(AddCardDto addCardDto);
     }
 }

@@ -4,6 +4,7 @@ using BankAppWithAPI.Dtos.Card;
 using BankAppWithAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Text;
 
 namespace BankAppWithAPI.Services.CardService
 {
@@ -20,15 +21,15 @@ namespace BankAppWithAPI.Services.CardService
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<GetCardDto>> CreateCard(string pinCode)
+        public async Task<ServiceResponse<GetCardDto>> CreateCard(AddCardDto addCardDto)
         {
             var serviceResponse = new ServiceResponse<GetCardDto>();
 
-            if (!pinCode.All(char.IsDigit) || pinCode.Length != 4)
+            if (!addCardDto.PinCode.All(char.IsDigit) || addCardDto.PinCode.Length != 4)
             {
                 serviceResponse.Data = null;
                 serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = $"PinCode {pinCode} in not valid. It must contain digits and contain 4 numbers";
+                serviceResponse.Message = $"PinCode {addCardDto.PinCode} in not valid. It must contain digits and contain 4 numbers";
                 serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
                 return serviceResponse;
             }
@@ -50,7 +51,15 @@ namespace BankAppWithAPI.Services.CardService
                 serviceResponse.Message = "User not found";
                 serviceResponse.StatusCode = HttpStatusCode.NotFound;
                 return serviceResponse;
-            }else if (user.Card != null)
+            }
+            else if(addCardDto.PaymentSystem == null)
+            {
+                serviceResponse.IsSuccessful = false;
+                serviceResponse.Message = "Please, choose the payment System";
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                return serviceResponse;
+            }
+            else if (user.Card != null)
             {
                 serviceResponse.IsSuccessful = false;
                 serviceResponse.Message = "The user has a card already.";
@@ -60,14 +69,15 @@ namespace BankAppWithAPI.Services.CardService
 
             try
             {
-                var cardNumber = await GenerateUniqueCardNumber();
+                var cardNumber = await GenerateUniqueCardNumber(addCardDto.PaymentSystem);
 
-                CreatePinHash(pinCode, out byte[] pinHash, out byte[] pinSalt);
-                CreateCVVHash(pinCode, out byte[] CVVHash, out byte[] CVVSalt);
+                CreatePinHash(addCardDto.PinCode, out byte[] pinHash, out byte[] pinSalt);
+                CreateCVVHash(addCardDto.PinCode, out byte[] CVVHash, out byte[] CVVSalt);
 
                 var card = new Card
                 {
                     CardNumber = cardNumber,
+                    PaymentSystem = addCardDto.PaymentSystem,
                     PinHash = pinHash,
                     PinSalt = pinSalt,
                     CVVHash = CVVHash,
@@ -93,14 +103,15 @@ namespace BankAppWithAPI.Services.CardService
             return serviceResponse;
         }
 
-        private async Task<string> GenerateUniqueCardNumber()
+        private async Task<string> GenerateUniqueCardNumber(PaymentSystem? paymentSystem)
         {
-            string cardNumber;
+            string bin = ((int)paymentSystem!).ToString() + "301025";
+            string cardNumber = "";
             bool isUnique;
 
             do
             {
-                cardNumber = GenerateRandomCardNumber();
+                cardNumber = GenerateRandomCardNumber(bin);
                 isUnique = !await _context.Cards.AnyAsync(a => a.CardNumber == cardNumber);
             }
             while (!isUnique);
@@ -108,10 +119,47 @@ namespace BankAppWithAPI.Services.CardService
             return cardNumber;
         }
 
-        private string GenerateRandomCardNumber()
+        private string GenerateRandomCardNumber(string bin)
         {
-            var random = new Random();
-            return random.Next(10000000, 99999999).ToString("D10");
+            StringBuilder sb = new StringBuilder(bin);
+            int length = 16;
+
+            // Generating random numbers for the card until we reach the desired length minus 1 (check digit)
+            Random random = new Random();
+            while (sb.Length < length - 1)
+            {
+                sb.Append(random.Next(0, 10));
+            }
+
+            // Adding a check digit
+            sb.Append(CalculateLuhnCheckDigit(sb.ToString()));
+
+            return sb.ToString();
+        }
+
+        private int CalculateLuhnCheckDigit(string number)
+        {
+            int sum = 0;
+            bool alternate = false;
+            int n = 0;
+
+            for (int i = number.Length - 1; i >= 0; i--)
+            {
+                n = int.Parse(number[i].ToString());
+
+                if (alternate)
+                {
+                    n *= 2;
+                    if (n > 9)
+                        n -= 9;
+                }
+
+                sum += n;
+                alternate = !alternate;
+            }
+
+            int checkDigit = (10 - (sum % 10)) % 10;
+            return checkDigit;
         }
 
         private void CreatePinHash(string pinCode, out byte[] pinHash, out byte[] pinSalt)
@@ -139,4 +187,5 @@ namespace BankAppWithAPI.Services.CardService
         }
     }
 
+    
 }

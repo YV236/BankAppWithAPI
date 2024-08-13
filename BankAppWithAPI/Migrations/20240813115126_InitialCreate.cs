@@ -60,7 +60,7 @@ namespace BankAppWithAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IBAN = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IBAN = table.Column<string>(type: "nvarchar(28)", maxLength: 28, nullable: false),
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     AccountPriority = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     AccountName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -184,6 +184,7 @@ namespace BankAppWithAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CardNumber = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
+                    PaymentSystem = table.Column<byte>(type: "tinyint", nullable: false),
                     PinHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     PinSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     CVVHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),

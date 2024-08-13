@@ -63,7 +63,7 @@ namespace BankAppWithAPI.Data
 
             modelBuilder.Entity<BankAccount>(entity =>
             {
-                entity.Property(e => e.IBAN).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.IBAN).HasMaxLength(28).IsRequired();
                 entity.Property(e => e.AccountPriority).HasMaxLength(40);
                 entity.Property(e => e.AccountName).HasMaxLength(100);
                 entity.Property(e => e.DateOfCreation).IsRequired();
@@ -72,6 +72,7 @@ namespace BankAppWithAPI.Data
             modelBuilder.Entity<Card>(entity =>
             {
                 entity.Property(e => e.CardNumber).HasMaxLength(16).IsRequired();
+                entity.Property(e => e.PaymentSystem).IsRequired();
                 entity.Property(e => e.PinHash).IsRequired();
                 entity.Property(e => e.PinSalt).IsRequired();
                 entity.Property(e => e.CVVHash).IsRequired();

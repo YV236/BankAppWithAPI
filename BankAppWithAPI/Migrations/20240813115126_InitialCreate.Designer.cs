@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAppWithAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240807133000_InitialCreate")]
+    [Migration("20240813115126_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -51,8 +51,8 @@ namespace BankAppWithAPI.Migrations
 
                     b.Property<string>("IBAN")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(28)
+                        .HasColumnType("nvarchar(28)");
 
                     b.HasKey("Id");
 
@@ -110,6 +110,9 @@ namespace BankAppWithAPI.Migrations
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<byte>("PaymentSystem")
+                        .HasColumnType("tinyint");
 
                     b.Property<byte[]>("PinHash")
                         .IsRequired()
