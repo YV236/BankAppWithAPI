@@ -4,6 +4,7 @@ using BankAppWithAPI.Dtos.Card;
 using BankAppWithAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Numerics;
 using System.Text;
 
 namespace BankAppWithAPI.Services.CardService
@@ -123,16 +124,30 @@ namespace BankAppWithAPI.Services.CardService
         {
             StringBuilder sb = new StringBuilder(bin);
             int length = 16;
+            bool check = false;
 
-            // Generating random numbers for the card until we reach the desired length minus 1 (check digit)
-            Random random = new Random();
-            while (sb.Length < length - 1)
+            while (!check)
             {
-                sb.Append(random.Next(0, 10));
-            }
+                // Generating random numbers for the card until we reach the desired length minus 1 (check digit)
+                Random random = new Random();
+                while (sb.Length < length - 1)
+                {
+                    sb.Append(random.Next(0, 10));
+                }
 
-            // Adding a check digit
-            sb.Append(CalculateLuhnCheckDigit(sb.ToString()));
+                // Adding a check digit
+                sb.Append(CalculateLuhnCheckDigit(sb.ToString()));
+
+                // Тут іде перевірка чи число відповідає алгоритму Луна
+                if(ValidateLuhnCheck(sb.ToString()))
+                {
+                    check = true;
+                }
+                else
+                {
+                    sb = new StringBuilder(bin);
+                }
+            }
 
             return sb.ToString();
         }
@@ -160,6 +175,30 @@ namespace BankAppWithAPI.Services.CardService
 
             int checkDigit = (10 - (sum % 10)) % 10;
             return checkDigit;
+        }
+
+        private static bool ValidateLuhnCheck(string number)
+        {
+            int sum = 0;
+            bool alternate = false;
+
+            // Обчислення суми цифр
+            for (int i = number.Length - 1; i >= 0; i--)
+            {
+                int n = int.Parse(number[i].ToString());
+
+                if (alternate)
+                {
+                    n *= 2;
+                    if (n > 9)
+                        n -= 9;
+                }
+
+                sum += n;
+                alternate = !alternate;
+            }
+
+            return sum % 10 == 0;
         }
 
         private void CreatePinHash(string pinCode, out byte[] pinHash, out byte[] pinSalt)
