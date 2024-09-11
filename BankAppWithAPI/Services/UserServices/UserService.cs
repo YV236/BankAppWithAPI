@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
+using BankAppWithAPI.Extensions;
 
 namespace BankAppWithAPI.Services.UserServices
 {
@@ -33,7 +34,7 @@ namespace BankAppWithAPI.Services.UserServices
                 var getUser = await FindUser(user);
 
                 if (getUser == null)
-                    return CreateErrorResponse(serviceResponse, null!, "The user is not found", HttpStatusCode.NotFound);
+                    return serviceResponse.CreateErrorResponse(null!, "The user is not found", HttpStatusCode.NotFound);
 
                 var userDto = _mapper.Map<GetUserDto>(getUser);
                 serviceResponse.Data = userDto;
@@ -54,15 +55,15 @@ namespace BankAppWithAPI.Services.UserServices
             var serviceResponse = new ServiceResponse<int>();
 
             if (!AreAllFieldsFilled(userRegisterDto))
-                return CreateErrorResponse(serviceResponse, 0,
+                return serviceResponse.CreateErrorResponse(0,
                     "Error while registering. Some of the properties may be filled incorrectly", HttpStatusCode.UnprocessableEntity);
 
             if (!IsValidEmail(userRegisterDto.Email))
-                return CreateErrorResponse(serviceResponse, 0, 
+                return serviceResponse.CreateErrorResponse(0, 
                     $"Error while registering. Email '{userRegisterDto.Email}' must contain '@' and '.'", HttpStatusCode.UnprocessableEntity);
 
             if (userRegisterDto.PhoneNumber.Any(c => !char.IsDigit(c)) || userRegisterDto.PhoneNumber.Length < 9)
-                return CreateErrorResponse(serviceResponse, 0,
+                return serviceResponse.CreateErrorResponse(0,
                     $"Error while registering. Phone number '{userRegisterDto.PhoneNumber}' must contain numbers only. And contain at least 9 digits",
                     HttpStatusCode.UnprocessableEntity);
 
@@ -74,7 +75,7 @@ namespace BankAppWithAPI.Services.UserServices
             var result = await _userManager.CreateAsync(user, userRegisterDto.Password);
 
             if (!result.Succeeded)
-                return CreateErrorResponse(serviceResponse, 0, string.Join(", ", result.Errors.Select(e => e.Description)),
+                return serviceResponse.CreateErrorResponse(0, string.Join(", ", result.Errors.Select(e => e.Description)),
                     HttpStatusCode.BadRequest);
             
 
@@ -91,12 +92,13 @@ namespace BankAppWithAPI.Services.UserServices
             var getUser = await FindUser(user);
 
             if (!AreAllFieldsFilled(userUpdateDto))
-                return CreateErrorResponse(serviceResponse, null!, "Error while updating. Some of the properties maybe filled incorrect",
+                return serviceResponse.CreateErrorResponse(null!, "Error while updating. Some of the properties maybe filled incorrect",
                     HttpStatusCode.UnprocessableEntity);
 
              if (!userUpdateDto.PhoneNumber.All(char.IsDigit))
-                return CreateErrorResponse(serviceResponse, null!, $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must to contain numbers only",
+                return serviceResponse.CreateErrorResponse(null!, $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must to contain numbers only",
                     HttpStatusCode.UnprocessableEntity);
+
             
             _mapper.Map(userUpdateDto, getUser);
             getUser.Address = $"{userUpdateDto.Street} {userUpdateDto.HomeNumber} {userUpdateDto.City} {userUpdateDto.Country}";
@@ -151,15 +153,6 @@ namespace BankAppWithAPI.Services.UserServices
                 }
             }
             return true;
-        }
-
-        private ServiceResponse<T> CreateErrorResponse<T>(ServiceResponse<T> serviceResponse, T data, string message, HttpStatusCode statusCode)
-        {
-            serviceResponse.Data = data;
-            serviceResponse.IsSuccessful = false;
-            serviceResponse.Message = message;
-            serviceResponse.StatusCode = statusCode;
-            return serviceResponse;
         }
     }
 }

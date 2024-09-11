@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Numerics;
 using System.Text;
+using BankAppWithAPI.Extensions;
 
 namespace BankAppWithAPI.Services.CardService
 {
@@ -27,46 +28,24 @@ namespace BankAppWithAPI.Services.CardService
             var serviceResponse = new ServiceResponse<GetCardDto>();
 
             if (!addCardDto.PinCode.All(char.IsDigit) || addCardDto.PinCode.Length != 4)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = $"PinCode {addCardDto.PinCode} in not valid. It must contain digits and contain 4 numbers";
-                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
-                return serviceResponse;
-            }
+                return serviceResponse.CreateErrorResponse(null!, $"PinCode {addCardDto.PinCode} in not valid. It must contain digits and contain 4 numbers",
+                    HttpStatusCode.UnprocessableEntity);
 
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-            {
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "User not found";
-                serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                return serviceResponse;
-            }
+                return serviceResponse.CreateErrorResponse(null!, "User not found", HttpStatusCode.NotFound);
 
             var user = await _context.Users.Include(u => u.Card).FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)
-            {
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "User not found";
-                serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                return serviceResponse;
-            }
-            else if(addCardDto.PaymentSystem == null)
-            {
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "Please, choose the payment System";
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                return serviceResponse;
-            }
-            else if (user.Card != null)
-            {
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "The user has a card already.";
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                return serviceResponse;
-            }
+                return serviceResponse.CreateErrorResponse(null!, "User not found", HttpStatusCode.NotFound);
+
+
+            if (addCardDto.PaymentSystem == null)
+                return serviceResponse.CreateErrorResponse(null!, "Please, choose the payment System", HttpStatusCode.BadRequest);
+
+            if (user.Card != null)
+                return serviceResponse.CreateErrorResponse(null!, "The user has a card already.", HttpStatusCode.BadRequest);
 
             try
             {
@@ -224,7 +203,5 @@ namespace BankAppWithAPI.Services.CardService
                 }
             }
         }
-    }
-
-    
+    }    
 }
