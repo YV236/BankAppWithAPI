@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BankAppWithAPI.Data;
 using BankAppWithAPI.Dtos.BankAccount;
+using BankAppWithAPI.Extensions;
 using BankAppWithAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -43,11 +44,8 @@ namespace BankAppWithAPI.Services.BankAccountService
                 serviceResponse.IsSuccessful = true;
             }catch(Exception ex)
             {
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = ex.Message;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
             }
-
 
             return serviceResponse;
         }

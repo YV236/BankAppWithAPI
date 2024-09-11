@@ -75,9 +75,7 @@ namespace BankAppWithAPI.Services.CardService
             }
             catch (Exception ex)
             {
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = ex.Message;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
             }
 
             return serviceResponse;
