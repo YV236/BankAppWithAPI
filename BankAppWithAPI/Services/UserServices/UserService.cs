@@ -33,13 +33,7 @@ namespace BankAppWithAPI.Services.UserServices
                 var getUser = await FindUser(user);
 
                 if (getUser == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.IsSuccessful = false;
-                    serviceResponse.Message = "The user is not found";
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return serviceResponse;
-                }
+                    return CreateErrorResponse(serviceResponse, null!, "The user is not found", HttpStatusCode.NotFound);
 
                 var userDto = _mapper.Map<GetUserDto>(getUser);
                 serviceResponse.Data = userDto;
@@ -54,7 +48,67 @@ namespace BankAppWithAPI.Services.UserServices
 
             return serviceResponse;
         }
-        
+
+        public async Task<ServiceResponse<int>> Register(UserRegisterDto userRegisterDto)
+        {
+            var serviceResponse = new ServiceResponse<int>();
+
+            if (!AreAllFieldsFilled(userRegisterDto))
+                return CreateErrorResponse(serviceResponse, 0,
+                    "Error while registering. Some of the properties may be filled incorrectly", HttpStatusCode.UnprocessableEntity);
+
+            if (!IsValidEmail(userRegisterDto.Email))
+                return CreateErrorResponse(serviceResponse, 0, 
+                    $"Error while registering. Email '{userRegisterDto.Email}' must contain '@' and '.'", HttpStatusCode.UnprocessableEntity);
+
+            if (userRegisterDto.PhoneNumber.Any(c => !char.IsDigit(c)) || userRegisterDto.PhoneNumber.Length < 9)
+                return CreateErrorResponse(serviceResponse, 0,
+                    $"Error while registering. Phone number '{userRegisterDto.PhoneNumber}' must contain numbers only. And contain at least 9 digits",
+                    HttpStatusCode.UnprocessableEntity);
+
+            var user = _mapper.Map<User>(userRegisterDto);
+            user.UserName = userRegisterDto.Email;
+            user.Address = $"{userRegisterDto.Street} {userRegisterDto.HomeNumber} {userRegisterDto.City} {userRegisterDto.Country}";
+            user.DateOfCreation = DateTime.UtcNow;
+
+            var result = await _userManager.CreateAsync(user, userRegisterDto.Password);
+
+            if (!result.Succeeded)
+                return CreateErrorResponse(serviceResponse, 0, string.Join(", ", result.Errors.Select(e => e.Description)),
+                    HttpStatusCode.BadRequest);
+            
+
+            serviceResponse.Data = 1;
+            serviceResponse.IsSuccessful = true;
+            serviceResponse.Message = "User registered successfully";
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetUserDto>> UpdateUserInfo(ClaimsPrincipal user, UpdateUserDto userUpdateDto)
+        {
+            var serviceResponse = new ServiceResponse<GetUserDto>();
+            var getUser = await FindUser(user);
+
+            if (!AreAllFieldsFilled(userUpdateDto))
+                return CreateErrorResponse(serviceResponse, null!, "Error while updating. Some of the properties maybe filled incorrect",
+                    HttpStatusCode.UnprocessableEntity);
+
+             if (!userUpdateDto.PhoneNumber.All(char.IsDigit))
+                return CreateErrorResponse(serviceResponse, null!, $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must to contain numbers only",
+                    HttpStatusCode.UnprocessableEntity);
+            
+            _mapper.Map(userUpdateDto, getUser);
+            getUser.Address = $"{userUpdateDto.Street} {userUpdateDto.HomeNumber} {userUpdateDto.City} {userUpdateDto.Country}";
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data = _mapper.Map<GetUserDto>(getUser);
+            serviceResponse.IsSuccessful = true;
+            serviceResponse.Message = "The data successfully updated";
+            return serviceResponse;
+        }
+
+
         private async Task<User> FindUser(ClaimsPrincipal userToFind)
         {
             var userId = userToFind.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -75,7 +129,7 @@ namespace BankAppWithAPI.Services.UserServices
             foreach (var property in properties)
             {
                 var value = property.GetValue(user);
-                
+
                 if (property.PropertyType == typeof(string) && string.IsNullOrWhiteSpace(value as string))
                 {
                     return false;
@@ -99,85 +153,12 @@ namespace BankAppWithAPI.Services.UserServices
             return true;
         }
 
-        public async Task<ServiceResponse<int>> Register(UserRegisterDto userRegisterDto)
+        private ServiceResponse<T> CreateErrorResponse<T>(ServiceResponse<T> serviceResponse, T data, string message, HttpStatusCode statusCode)
         {
-            var serviceResponse = new ServiceResponse<int>();
-
-            if (!AreAllFieldsFilled(userRegisterDto))
-            {
-                serviceResponse.Data = 0;
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "Error while registering. Some of the properties maybe filled incorrect";
-                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
-                return serviceResponse;
-            }else if (!IsValidEmail(userRegisterDto.Email))
-            {
-                serviceResponse.Data = 0;
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = $"Error while registering. Email '{userRegisterDto.Email}' must to contain '@' and '.'";
-                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
-                return serviceResponse;
-            }else if(!userRegisterDto.PhoneNumber.All(char.IsDigit))
-            {
-                serviceResponse.Data = 0;
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = $"Error while registering. Phone number '{userRegisterDto.PhoneNumber}' must to contain numbers only";
-                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
-                return serviceResponse;
-            }
-
-            var user = _mapper.Map<User>(userRegisterDto);
-            user.UserName = userRegisterDto.Email;
-            user.Address = $"{userRegisterDto.Street} {userRegisterDto.HomeNumber} {userRegisterDto.City} {userRegisterDto.Country}";
-            user.DateOfCreation = DateTime.UtcNow;
-
-            var result = await _userManager.CreateAsync(user, userRegisterDto.Password);
-
-            if (!result.Succeeded)
-            {
-                serviceResponse.Data = 0;
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = string.Join(", ", result.Errors.Select(e => e.Description));
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                return serviceResponse;
-            }
-
-            serviceResponse.Data = 1;
-            serviceResponse.IsSuccessful = true;
-            serviceResponse.Message = "User registered successfully";
-
-            return serviceResponse;
-        }
-
-        public async Task<ServiceResponse<GetUserDto>> UpdateUserInfo(ClaimsPrincipal user, UpdateUserDto userUpdateDto)
-        {
-            var serviceResponse = new ServiceResponse<GetUserDto>();
-            var getUser = await FindUser(user);
-
-            if (!AreAllFieldsFilled(userUpdateDto))
-            {
-                serviceResponse.Data = null;
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = "Error while updating. Some of the properties maybe filled incorrect";
-                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
-                return serviceResponse;
-            }
-            else if (!userUpdateDto.PhoneNumber.All(char.IsDigit))
-            {
-                serviceResponse.Data = null;
-                serviceResponse.IsSuccessful = false;
-                serviceResponse.Message = $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must to contain numbers only";
-                serviceResponse.StatusCode = HttpStatusCode.UnprocessableEntity;
-                return serviceResponse;
-            }
-
-            _mapper.Map(userUpdateDto, getUser);
-            getUser.Address = $"{userUpdateDto.Street} {userUpdateDto.HomeNumber} {userUpdateDto.City} {userUpdateDto.Country}";
-            await _context.SaveChangesAsync();
-
-            serviceResponse.Data = _mapper.Map<GetUserDto>(getUser);
-            serviceResponse.IsSuccessful = true;
-            serviceResponse.Message = "The data successfully updated";
+            serviceResponse.Data = data;
+            serviceResponse.IsSuccessful = false;
+            serviceResponse.Message = message;
+            serviceResponse.StatusCode = statusCode;
             return serviceResponse;
         }
     }
