@@ -50,6 +50,45 @@ namespace BankAppWithAPI.Services.BankAccountService
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<List<GetBankAccountDto>>> GetUserBankAccounts(ClaimsPrincipal user)
+        {
+            var serviceResponse = new ServiceResponse<List<GetBankAccountDto>>();
+
+            try
+            {
+                var getUser = await FindUser(user);
+
+                if (getUser == null)
+                    return serviceResponse.CreateErrorResponse(null!, "The user is not found", HttpStatusCode.NotFound);
+
+                var bankAccountsDto = new List<GetBankAccountDto>();
+
+                foreach (var bankAccount in getUser.AccountCards)
+                {
+                    bankAccountsDto.Add(_mapper.Map<GetBankAccountDto>(bankAccount.Account));
+                }
+
+                serviceResponse.Data = bankAccountsDto;
+                serviceResponse.IsSuccessful = true;
+
+            }
+            catch(Exception ex)
+            {
+                return serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
+            }
+
+            return serviceResponse;
+        }
+
+        private async Task<User> FindUser(ClaimsPrincipal userToFind)
+        {
+            var userId = userToFind.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var getUser = await _context.Users.Include(u => u.Card).Include(u => u.AccountCards).ThenInclude(ac=>ac.Account)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            return getUser;
+        }
+
 
         private async Task<string> GenerateUniqueIBAN()
         {

@@ -57,8 +57,8 @@ namespace BankAppWithAPI.Services.UserServices
                     "Error while registering. Some of the properties may be filled incorrectly", HttpStatusCode.UnprocessableEntity);
 
             if (!IsValidEmail(userRegisterDto.Email))
-                return serviceResponse.CreateErrorResponse(0, 
-                    $"Error while registering. Email '{userRegisterDto.Email}' must contain '@' and '.'", HttpStatusCode.UnprocessableEntity);
+                return serviceResponse.CreateErrorResponse(0,
+                    $"Registration failed. The email '{userRegisterDto.Email}' must include '@' and a domain such as '.com' or '.pl'.", HttpStatusCode.UnprocessableEntity);
 
             if (userRegisterDto.PhoneNumber.Any(c => !char.IsDigit(c)) || userRegisterDto.PhoneNumber.Length < 9)
                 return serviceResponse.CreateErrorResponse(0,

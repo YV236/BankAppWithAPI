@@ -7,6 +7,7 @@ using BankAppWithAPI.Data;
 using BankAppWithAPI.Models;
 using BankAppWithAPI.Services.BankAccountService;
 using BankAppWithAPI.Dtos.BankAccount;
+using Azure;
 
 namespace BankAppWithAPI.Controllers.BankAccount
 {
@@ -19,6 +20,14 @@ namespace BankAppWithAPI.Controllers.BankAccount
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> CreateBankAccount(CreateBankAccountDto createBankAccountDto)
         {
             var response = await bankAccountService.CreateBankAccount(createBankAccountDto);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
+        [HttpGet("my Accounts")]
+        public async Task<ActionResult<ServiceResponse<List<GetBankAccountDto>>>> GetBankAccounts()
+        {
+            var response = await bankAccountService.GetUserBankAccounts(User);
 
             return StatusCode((int)response.StatusCode, response);
         }
