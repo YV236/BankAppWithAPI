@@ -19,7 +19,7 @@ namespace BankAppWithAPI.Controllers.BankAccount
         [HttpPost("create")]
         public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> CreateBankAccount(CreateBankAccountDto createBankAccountDto)
         {
-            var response = await bankAccountService.CreateBankAccount(createBankAccountDto);
+            var response = await bankAccountService.CreateBankAccount(createBankAccountDto, User);
 
             return StatusCode((int)response.StatusCode, response);
         }

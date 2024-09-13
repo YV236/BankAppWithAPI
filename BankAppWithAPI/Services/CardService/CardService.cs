@@ -10,36 +10,22 @@ using BankAppWithAPI.Extensions;
 
 namespace BankAppWithAPI.Services.CardService
 {
-    public class CardService : ICardService
+    public class CardService(DataContext _context, IMapper _mapper) : ICardService
     {
-        private readonly DataContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMapper _mapper;
 
-        public CardService(DataContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
-        {
-            _context = context;
-            _httpContextAccessor = httpContextAccessor;
-            _mapper = mapper;
-        }
-
-        public async Task<ServiceResponse<GetCardDto>> CreateCard(AddCardDto addCardDto)
+        public async Task<ServiceResponse<GetCardDto>> CreateCard(AddCardDto addCardDto, ClaimsPrincipal userToFind)
         {
             var serviceResponse = new ServiceResponse<GetCardDto>();
 
-            if (!addCardDto.PinCode.All(char.IsDigit) || addCardDto.PinCode.Length != 4)
+            if (!addCardDto.PinCode.Any(c => !char.IsDigit(c)) || addCardDto.PinCode.Length != 4)
                 return serviceResponse.CreateErrorResponse(null!, $"PinCode {addCardDto.PinCode} in not valid. It must contain digits and contain 4 numbers",
                     HttpStatusCode.UnprocessableEntity);
 
-            var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
-                return serviceResponse.CreateErrorResponse(null!, "User not found", HttpStatusCode.NotFound);
 
-            var user = await _context.Users.Include(u => u.Card).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await userToFind.FindUser(_context);
 
             if (user == null)
-                return serviceResponse.CreateErrorResponse(null!, "User not found", HttpStatusCode.NotFound);
-
+                return serviceResponse.CreateErrorResponse(null!, "Unable to find the user.", HttpStatusCode.NotFound);
 
             if (addCardDto.PaymentSystem == null)
                 return serviceResponse.CreateErrorResponse(null!, "Please, choose the payment System", HttpStatusCode.BadRequest);

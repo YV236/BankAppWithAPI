@@ -10,9 +10,9 @@ using System.Text;
 
 namespace BankAppWithAPI.Services.BankAccountService
 {
-    public class BankAccountService(DataContext _context, IHttpContextAccessor _httpContextAccessor, IMapper _mapper) : IBankAccountService
+    public class BankAccountService(DataContext _context, IMapper _mapper) : IBankAccountService
     {
-        public async Task<ServiceResponse<GetBankAccountDto>> CreateBankAccount(CreateBankAccountDto bankAccountDto)
+        public async Task<ServiceResponse<GetBankAccountDto>> CreateBankAccount(CreateBankAccountDto bankAccountDto, ClaimsPrincipal user)
         {
             var serviceResponse = new ServiceResponse<GetBankAccountDto>();
 
@@ -30,8 +30,14 @@ namespace BankAppWithAPI.Services.BankAccountService
 
                 var bankAccountCard = new BankAccountCard();
                 bankAccountCard.Account = newBankAccount;
-                bankAccountCard.User = await _context.Users.Include(u => u.Card)
-                    .FirstOrDefaultAsync(u => u.Id == FindUserId());
+                bankAccountCard.User = await user.FindUser(_context);
+
+                if (bankAccountCard.User == null)
+                    return serviceResponse.CreateErrorResponse(null!, "Unable to find the user.", HttpStatusCode.NotFound);
+
+                if(bankAccountCard.User.Card == null)
+                    return serviceResponse.CreateErrorResponse(null!, "A card is required before a user can create a bank account.", HttpStatusCode.InternalServerError);
+
                 bankAccountCard.Card = bankAccountCard.User.Card;
 
                 _context.BankAccountCards.Add(bankAccountCard);
@@ -42,6 +48,7 @@ namespace BankAppWithAPI.Services.BankAccountService
 
                 serviceResponse.Data = getBankAccount;
                 serviceResponse.IsSuccessful = true;
+
             }catch(Exception ex)
             {
                 return serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
@@ -56,14 +63,17 @@ namespace BankAppWithAPI.Services.BankAccountService
 
             try
             {
-                var getUser = await FindUser(user);
+                var getUser = await user.FindUser(_context);
 
                 if (getUser == null)
-                    return serviceResponse.CreateErrorResponse(null!, "The user is not found", HttpStatusCode.NotFound);
+                    return serviceResponse.CreateErrorResponse(null!, "Unable to find the user.", HttpStatusCode.NotFound);
+
+                if(getUser.AccountCards!.Count == 0)
+                    return serviceResponse.CreateErrorResponse(null!, "You don't have any bank accounts at the moment.", HttpStatusCode.NotFound);
 
                 var bankAccountsDto = new List<GetBankAccountDto>();
 
-                foreach (var bankAccount in getUser.AccountCards)
+                foreach (var bankAccount in getUser.AccountCards!)
                 {
                     bankAccountsDto.Add(_mapper.Map<GetBankAccountDto>(bankAccount.Account));
                 }
@@ -79,16 +89,6 @@ namespace BankAppWithAPI.Services.BankAccountService
 
             return serviceResponse;
         }
-
-        private async Task<User> FindUser(ClaimsPrincipal userToFind)
-        {
-            var userId = userToFind.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var getUser = await _context.Users.Include(u => u.Card).Include(u => u.AccountCards).ThenInclude(ac=>ac.Account)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            return getUser;
-        }
-
 
         private async Task<string> GenerateUniqueIBAN()
         {
@@ -113,9 +113,6 @@ namespace BankAppWithAPI.Services.BankAccountService
             var random2 = new Random();
             return random2.Next(10000000, 99999999).ToString("D8") + random1.Next(10000000, 99999999).ToString("D8");
         }
-
-        private string FindUserId() => _httpContextAccessor.HttpContext!.User
-            .FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         static string ReplaceLettersWithNumbers(string input)
         {

@@ -31,10 +31,10 @@ namespace BankAppWithAPI.Services.UserServices
 
             try
             {
-                var getUser = await FindUser(user);
+                var getUser = await user.FindUser(_context);
 
                 if (getUser == null)
-                    return serviceResponse.CreateErrorResponse(null!, "The user is not found", HttpStatusCode.NotFound);
+                    return serviceResponse.CreateErrorResponse(null!, "Unable to find the user.", HttpStatusCode.NotFound);
 
                 var userDto = _mapper.Map<GetUserDto>(getUser);
                 serviceResponse.Data = userDto;
@@ -87,17 +87,18 @@ namespace BankAppWithAPI.Services.UserServices
         public async Task<ServiceResponse<GetUserDto>> UpdateUserInfo(ClaimsPrincipal user, UpdateUserDto userUpdateDto)
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
-            var getUser = await FindUser(user);
+            var getUser = await user.FindUser(_context);
 
             if (!AreAllFieldsFilled(userUpdateDto))
                 return serviceResponse.CreateErrorResponse(null!, "Error while updating. Some of the properties maybe filled incorrect",
                     HttpStatusCode.UnprocessableEntity);
 
-             if (!userUpdateDto.PhoneNumber.All(char.IsDigit))
-                return serviceResponse.CreateErrorResponse(null!, $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must to contain numbers only",
-                    HttpStatusCode.UnprocessableEntity);
+             if (userUpdateDto.PhoneNumber.Any(c => !char.IsDigit(c)) || userUpdateDto.PhoneNumber.Length < 9)
+                return serviceResponse.CreateErrorResponse(null!,
+                   $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must contain numbers only. And contain at least 9 digits",
+                   HttpStatusCode.UnprocessableEntity);
 
-            
+
             _mapper.Map(userUpdateDto, getUser);
             getUser.Address = $"{userUpdateDto.Street} {userUpdateDto.HomeNumber} {userUpdateDto.City} {userUpdateDto.Country}";
             await _context.SaveChangesAsync();
@@ -106,15 +107,6 @@ namespace BankAppWithAPI.Services.UserServices
             serviceResponse.IsSuccessful = true;
             serviceResponse.Message = "The data successfully updated";
             return serviceResponse;
-        }
-
-
-        private async Task<User> FindUser(ClaimsPrincipal userToFind)
-        {
-            var userId = userToFind.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var getUser = await _context.Users.Include(u => u.Card).FirstOrDefaultAsync(u => u.Id == userId);
-
-            return getUser;
         }
 
         private bool IsValidEmail(string email)
