@@ -34,7 +34,7 @@ namespace BankAppWithAPI.Services.UserServices
                 var getUser = await user.FindUser(_context);
 
                 if (getUser == null)
-                    return serviceResponse.CreateErrorResponse(null!, "Unable to find the user.", HttpStatusCode.NotFound);
+                    return serviceResponse.CreateErrorResponse(new GetUserDto(), "Unable to find the user.", HttpStatusCode.NotFound);
 
                 var userDto = _mapper.Map<GetUserDto>(getUser);
                 serviceResponse.Data = userDto;
@@ -42,7 +42,7 @@ namespace BankAppWithAPI.Services.UserServices
             }
             catch (Exception ex)
             {
-                return serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
+                return serviceResponse.CreateErrorResponse(new GetUserDto(), ex.Message, HttpStatusCode.InternalServerError);
             }
 
             return serviceResponse;
@@ -90,11 +90,11 @@ namespace BankAppWithAPI.Services.UserServices
             var getUser = await user.FindUser(_context);
 
             if (!AreAllFieldsFilled(userUpdateDto))
-                return serviceResponse.CreateErrorResponse(null!, "Error while updating. Some of the properties maybe filled incorrect",
+                return serviceResponse.CreateErrorResponse(new GetUserDto(), "Error while updating. Some of the properties maybe filled incorrect",
                     HttpStatusCode.UnprocessableEntity);
 
              if (userUpdateDto.PhoneNumber.Any(c => !char.IsDigit(c)) || userUpdateDto.PhoneNumber.Length < 9)
-                return serviceResponse.CreateErrorResponse(null!,
+                return serviceResponse.CreateErrorResponse(new GetUserDto(),
                    $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must contain numbers only. And contain at least 9 digits",
                    HttpStatusCode.UnprocessableEntity);
 

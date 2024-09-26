@@ -64,7 +64,6 @@ namespace BankAppWithAPI.Data
             modelBuilder.Entity<BankAccount>(entity =>
             {
                 entity.Property(e => e.IBAN).HasMaxLength(28).IsRequired();
-                entity.Property(e => e.AccountPriority).HasMaxLength(40);
                 entity.Property(e => e.AccountName).HasMaxLength(100);
                 entity.Property(e => e.DateOfCreation).IsRequired();
             });

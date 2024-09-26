@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAppWithAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240813115126_InitialCreate")]
+    [Migration("20240920133848_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,21 +27,14 @@ namespace BankAppWithAPI.Migrations
 
             modelBuilder.Entity("BankAppWithAPI.Models.BankAccount", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AccountName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("AccountPriority")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
@@ -54,6 +47,9 @@ namespace BankAppWithAPI.Migrations
                         .HasMaxLength(28)
                         .HasColumnType("nvarchar(28)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("BankAccounts");
@@ -61,17 +57,15 @@ namespace BankAppWithAPI.Migrations
 
             modelBuilder.Entity("BankAppWithAPI.Models.BankAccountCard", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CardId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CardId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -89,11 +83,9 @@ namespace BankAppWithAPI.Migrations
 
             modelBuilder.Entity("BankAppWithAPI.Models.Card", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("CVVHash")
                         .IsRequired()

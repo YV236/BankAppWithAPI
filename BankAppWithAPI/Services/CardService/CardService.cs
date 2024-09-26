@@ -17,7 +17,7 @@ namespace BankAppWithAPI.Services.CardService
         {
             var serviceResponse = new ServiceResponse<GetCardDto>();
 
-            if (!addCardDto.PinCode.Any(c => !char.IsDigit(c)) || addCardDto.PinCode.Length != 4)
+            if (!addCardDto.PinCode.Any(c => !char.IsDigit(c)) && addCardDto.PinCode.Length != 4)
                 return serviceResponse.CreateErrorResponse(null!, $"PinCode {addCardDto.PinCode} in not valid. It must contain digits and contain 4 numbers",
                     HttpStatusCode.UnprocessableEntity);
 
@@ -25,13 +25,13 @@ namespace BankAppWithAPI.Services.CardService
             var user = await userToFind.FindUser(_context);
 
             if (user == null)
-                return serviceResponse.CreateErrorResponse(null!, "Unable to find the user.", HttpStatusCode.NotFound);
+                return serviceResponse.CreateErrorResponse(new GetCardDto(), "Unable to find the user.", HttpStatusCode.NotFound);
 
             if (addCardDto.PaymentSystem == null)
-                return serviceResponse.CreateErrorResponse(null!, "Please, choose the payment System", HttpStatusCode.BadRequest);
+                return serviceResponse.CreateErrorResponse(new GetCardDto(), "Please, choose the payment System", HttpStatusCode.BadRequest);
 
             if (user.Card != null)
-                return serviceResponse.CreateErrorResponse(null!, "The user has a card already.", HttpStatusCode.BadRequest);
+                return serviceResponse.CreateErrorResponse(new GetCardDto(), "The user has a card already.", HttpStatusCode.BadRequest);
 
             try
             {

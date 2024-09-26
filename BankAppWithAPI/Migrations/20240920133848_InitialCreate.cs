@@ -58,11 +58,10 @@ namespace BankAppWithAPI.Migrations
                 name: "BankAccounts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IBAN = table.Column<string>(type: "nvarchar(28)", maxLength: 28, nullable: false),
                     Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    AccountPriority = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     AccountName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     DateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -181,8 +180,7 @@ namespace BankAppWithAPI.Migrations
                 name: "Cards",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CardNumber = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
                     PaymentSystem = table.Column<byte>(type: "tinyint", nullable: false),
                     PinHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
@@ -207,10 +205,9 @@ namespace BankAppWithAPI.Migrations
                 name: "BankAccountCards",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    CardId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CardId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>

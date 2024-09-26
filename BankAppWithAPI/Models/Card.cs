@@ -2,7 +2,7 @@
 {
     public class Card
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string CardNumber { get; set; } = string.Empty;
         public PaymentSystem? PaymentSystem { get; set; } 
         public byte[] PinHash { get; set; } = new byte[0];

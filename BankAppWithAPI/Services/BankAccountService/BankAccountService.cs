@@ -23,7 +23,6 @@ namespace BankAppWithAPI.Services.BankAccountService
                 var newBankAccount = new BankAccount
                 {
                     IBAN = iban,
-                    AccountPriority = bankAccountDto.AccountPriority,
                     AccountName = bankAccountDto.AccountName,
                     DateOfCreation = DateTime.UtcNow,
                 };
@@ -32,11 +31,14 @@ namespace BankAppWithAPI.Services.BankAccountService
                 bankAccountCard.Account = newBankAccount;
                 bankAccountCard.User = await user.FindUser(_context);
 
-                if (bankAccountCard.User == null)
-                    return serviceResponse.CreateErrorResponse(null!, "Unable to find the user.", HttpStatusCode.NotFound);
+                if (bankAccountCard.User.AccountCards!.Count == 0)
+                    bankAccountCard.Account.IsActive = true;
+
+                    if (bankAccountCard.User == null)
+                    return serviceResponse.CreateErrorResponse(new GetBankAccountDto(), "Unable to find the user.", HttpStatusCode.NotFound);
 
                 if(bankAccountCard.User.Card == null)
-                    return serviceResponse.CreateErrorResponse(null!, "A card is required before a user can create a bank account.", HttpStatusCode.InternalServerError);
+                    return serviceResponse.CreateErrorResponse(new GetBankAccountDto(), "A card is required before a user can create a bank account.", HttpStatusCode.InternalServerError);
 
                 bankAccountCard.Card = bankAccountCard.User.Card;
 
@@ -51,7 +53,7 @@ namespace BankAppWithAPI.Services.BankAccountService
 
             }catch(Exception ex)
             {
-                return serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
+                return serviceResponse.CreateErrorResponse(new GetBankAccountDto(), ex.Message, HttpStatusCode.InternalServerError);
             }
 
             return serviceResponse;
@@ -66,10 +68,10 @@ namespace BankAppWithAPI.Services.BankAccountService
                 var getUser = await user.FindUser(_context);
 
                 if (getUser == null)
-                    return serviceResponse.CreateErrorResponse(null!, "Unable to find the user.", HttpStatusCode.NotFound);
+                    return serviceResponse.CreateErrorResponse(new List<GetBankAccountDto>(), "Unable to find the user.", HttpStatusCode.NotFound);
 
                 if(getUser.AccountCards!.Count == 0)
-                    return serviceResponse.CreateErrorResponse(null!, "You don't have any bank accounts at the moment.", HttpStatusCode.NotFound);
+                    return serviceResponse.CreateErrorResponse(new List<GetBankAccountDto>(), "You don't have any bank accounts at the moment.", HttpStatusCode.NotFound);
 
                 var bankAccountsDto = new List<GetBankAccountDto>();
 
@@ -84,7 +86,7 @@ namespace BankAppWithAPI.Services.BankAccountService
             }
             catch(Exception ex)
             {
-                return serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
+                return serviceResponse.CreateErrorResponse(new List<GetBankAccountDto>(), ex.Message, HttpStatusCode.InternalServerError);
             }
 
             return serviceResponse;
