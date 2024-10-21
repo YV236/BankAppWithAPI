@@ -1,5 +1,4 @@
 global using Microsoft.EntityFrameworkCore;
-global using BankAppWithAPI.Services.Authentication;
 global using BankAppWithAPI.Services.UserServices;
 global using System.Security.Claims;
 using BankAppWithAPI.Data;

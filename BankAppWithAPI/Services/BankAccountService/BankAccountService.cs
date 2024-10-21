@@ -96,12 +96,12 @@ namespace BankAppWithAPI.Services.BankAccountService
         {
             string countryCode = "PL";
             string bankCode = "30102521";
-            string accountNumber = GenerateRandomAccountNumber();
-            string iban = GenerateIBAN(countryCode, bankCode, accountNumber);
+            string iban = "";
             bool isUnique;
 
             do
             {
+                iban = GenerateIBAN(countryCode, bankCode);
                 isUnique = !await _context.BankAccounts.AnyAsync(a => a.IBAN == iban);
             }
             while (!isUnique);
@@ -116,7 +116,51 @@ namespace BankAppWithAPI.Services.BankAccountService
             return random2.Next(10000000, 99999999).ToString("D8") + random1.Next(10000000, 99999999).ToString("D8");
         }
 
-        static string ReplaceLettersWithNumbers(string input)
+        //Method for IBAN generation
+        private string GenerateIBAN(string countryCode, string bankCode)
+        {
+            bool check = false;
+            string result = "";
+            while (!check)
+            {
+                string accountNumber = GenerateRandomAccountNumber();
+                // Initial IBAN with check digits 00
+                string iban = countryCode + "00" + bankCode + accountNumber;
+
+                // Calculation of check digits
+                int checkDigits = CalculateCheckDigits(iban);
+
+                // Formatting check digits
+                string formattedCheckDigits = checkDigits.ToString("D2");
+                result = countryCode + formattedCheckDigits + bankCode + accountNumber;
+
+                if (ValidateLuhnCheck(result))
+                    check = true;
+            }
+
+            // Return of final IBAN
+            return result;
+        }
+
+        // Method for calculating check digits
+        private int CalculateCheckDigits(string iban)
+        {
+            // Move the country code and check digits to the end
+            string rearrangedIBAN = iban.Substring(4) + iban.Substring(0, 4);
+
+            // Replacing letters with numerical values
+            string numericIBAN = ReplaceLettersWithNumbers(rearrangedIBAN);
+
+            // Conversion to BigInteger to execute module 97
+            BigInteger ibanNumber = BigInteger.Parse(numericIBAN);
+            int remainder = (int)(ibanNumber % 97);
+
+            // Calculation of check digits
+            int checkDigits = 98 - remainder;
+            return checkDigits;
+        }
+
+        private string ReplaceLettersWithNumbers(string input)
         {
             StringBuilder sb = new StringBuilder();
             foreach (char c in input)
@@ -134,38 +178,30 @@ namespace BankAppWithAPI.Services.BankAccountService
             return sb.ToString();
         }
 
-        // Method for calculating check digits
-        static int CalculateCheckDigits(string iban)
+        private bool ValidateLuhnCheck(string number)
         {
-            // Move the country code and check digits to the end
-            string rearrangedIBAN = iban.Substring(4) + iban.Substring(0, 4);
+            int sum = 0;
+            bool alternate = false;
 
-            // Replacing letters with numerical values
-            string numericIBAN = ReplaceLettersWithNumbers(rearrangedIBAN);
+            string numericIBAN = ReplaceLettersWithNumbers(number);
 
-            // Conversion to BigInteger to execute module 97
-            BigInteger ibanNumber = BigInteger.Parse(numericIBAN);
-            int remainder = (int)(ibanNumber % 97);
+            // Обчислення суми цифр
+            for (int i = numericIBAN.Length - 1; i >= 0; i--)
+            {
+                int n = int.Parse(numericIBAN[i].ToString());
 
-            // Calculation of check digits
-            int checkDigits = 98 - remainder;
-            return checkDigits;
-        }
+                if (alternate)
+                {
+                    n *= 2;
+                    if (n > 9)
+                        n -= 9;
+                }
 
-        //Method for IBAN generation
-        static string GenerateIBAN(string countryCode, string bankCode, string accountNumber)
-        {
-            // Initial IBAN with check digits 00
-            string iban = countryCode + "00" + bankCode + accountNumber;
+                sum += n;
+                alternate = !alternate;
+            }
 
-            // Calculation of check digits
-            int checkDigits = CalculateCheckDigits(iban);
-
-            // Formatting check digits
-            string formattedCheckDigits = checkDigits.ToString("D2");
-
-            // Return of final IBAN
-            return countryCode + formattedCheckDigits + bankCode + accountNumber;
+            return sum % 10 == 0;
         }
     }
 }

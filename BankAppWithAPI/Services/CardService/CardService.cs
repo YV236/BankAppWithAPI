@@ -17,7 +17,7 @@ namespace BankAppWithAPI.Services.CardService
         {
             var serviceResponse = new ServiceResponse<GetCardDto>();
 
-            if (!addCardDto.PinCode.Any(c => !char.IsDigit(c)) && addCardDto.PinCode.Length != 4)
+            if (!addCardDto.PinCode.All(char.IsDigit) || addCardDto.PinCode.Length != 4)
                 return serviceResponse.CreateErrorResponse(null!, $"PinCode {addCardDto.PinCode} in not valid. It must contain digits and contain 4 numbers",
                     HttpStatusCode.UnprocessableEntity);
 
@@ -140,7 +140,7 @@ namespace BankAppWithAPI.Services.CardService
             return checkDigit;
         }
 
-        private static bool ValidateLuhnCheck(string number)
+        private bool ValidateLuhnCheck(string number)
         {
             int sum = 0;
             bool alternate = false;

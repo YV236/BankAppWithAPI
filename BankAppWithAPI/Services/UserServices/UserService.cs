@@ -115,22 +115,7 @@ namespace BankAppWithAPI.Services.UserServices
             return Regex.IsMatch(email, emailPattern);
         }
 
-        private bool AreAllFieldsFilled(UserRegisterDto user)
-        {
-            var properties = user.GetType().GetProperties();
-            foreach (var property in properties)
-            {
-                var value = property.GetValue(user);
-
-                if (property.PropertyType == typeof(string) && string.IsNullOrWhiteSpace(value as string))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private bool AreAllFieldsFilled(UpdateUserDto user)
+        private bool AreAllFieldsFilled<T>(T user) where T : class
         {
             var properties = user.GetType().GetProperties();
             foreach (var property in properties)
