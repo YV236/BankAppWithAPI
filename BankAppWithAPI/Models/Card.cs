@@ -10,8 +10,8 @@
         public byte[] CVVHash { get; set; } = new byte[0];
         public byte[] CVVSalt { get; set; } = new byte[0];
         public DateTime ExpiryDate { get; set; }
-        public User? User { get; set; }
+        public virtual User? User { get; set; }
         public string UserId { get; set; } = string.Empty;
-        public List<BankAccountCard> AccountCards { get; set; } = new List<BankAccountCard>();
+        public virtual List<BankAccountCard> AccountCards { get; set; } = new List<BankAccountCard>();
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BankAppWithAPI.Services.BankAccountService;
 using BankAppWithAPI.Services.CardService;
+using BankAppWithAPI.Services.OperationService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,12 +36,13 @@ builder.Services.AddIdentityApiEndpoints<User>().AddRoles<IdentityRole>()
     .AddApiEndpoints();
 
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBankAccountService, BankAccountService>();
 builder.Services.AddScoped<ICardService, CardService>();
+builder.Services.AddScoped<IOperationService, OperationService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();

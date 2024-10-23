@@ -1,4 +1,5 @@
 ﻿using BankAppWithAPI.Models;
+using BankAppWithAPI.Models.Operations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BankAppWithAPI.Data
@@ -14,6 +15,7 @@ namespace BankAppWithAPI.Data
         public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<BankAccountCard> BankAccountCards { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Operation> Operations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -61,11 +63,21 @@ namespace BankAppWithAPI.Data
                 entity.Property(e => e.PhoneNumber).HasMaxLength(15);
             });
 
+            modelBuilder.Entity<Operation>()
+                .HasDiscriminator<OperationType>("OperationType")
+                .HasValue<DepositOperation>(OperationType.Deposit)
+                .HasValue<WithdrawOperation>(OperationType.Withdraw)
+                .HasValue<TransferOperation>(OperationType.Transfer);
+
             modelBuilder.Entity<BankAccount>(entity =>
             {
                 entity.Property(e => e.IBAN).HasMaxLength(28).IsRequired();
                 entity.Property(e => e.AccountName).HasMaxLength(100);
                 entity.Property(e => e.DateOfCreation).IsRequired();
+                entity.HasMany(e => e.Operations)
+                .WithOne(t => t.Account)
+                .HasForeignKey(t => t.AccountId)
+                .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Card>(entity =>

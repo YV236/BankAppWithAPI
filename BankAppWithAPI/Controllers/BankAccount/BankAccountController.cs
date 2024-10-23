@@ -31,5 +31,13 @@ namespace BankAppWithAPI.Controllers.BankAccount
 
             return StatusCode((int)response.StatusCode, response);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<GetBankAccountDto>>> GetConcreteBankAccount()
+        {
+            var response = await bankAccountService.GetConcreteBankAccount(User);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
     }
 }

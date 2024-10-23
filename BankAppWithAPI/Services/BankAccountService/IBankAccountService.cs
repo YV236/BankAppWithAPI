@@ -7,5 +7,6 @@ namespace BankAppWithAPI.Services.BankAccountService
     {
         Task<ServiceResponse<GetBankAccountDto>> CreateBankAccount(CreateBankAccountDto bankAccount, ClaimsPrincipal user);
         Task<ServiceResponse<List<GetBankAccountDto>>> GetUserBankAccounts(ClaimsPrincipal user);
+        Task<ServiceResponse<GetBankAccountDto>> GetConcreteBankAccount(ClaimsPrincipal user);
     }
 }

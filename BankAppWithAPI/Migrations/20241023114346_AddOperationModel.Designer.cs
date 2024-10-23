@@ -4,6 +4,7 @@ using BankAppWithAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAppWithAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241023114346_AddOperationModel")]
+    partial class AddOperationModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace BankAppWithAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BankAccounts", (string)null);
+                    b.ToTable("BankAccounts");
                 });
 
             modelBuilder.Entity("BankAppWithAPI.Models.BankAccountCard", b =>
@@ -75,7 +78,7 @@ namespace BankAppWithAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BankAccountCards", (string)null);
+                    b.ToTable("BankAccountCards");
                 });
 
             modelBuilder.Entity("BankAppWithAPI.Models.Card", b =>
@@ -120,7 +123,7 @@ namespace BankAppWithAPI.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("Cards", (string)null);
+                    b.ToTable("Cards");
                 });
 
             modelBuilder.Entity("BankAppWithAPI.Models.Operations.Operation", b =>
@@ -148,7 +151,7 @@ namespace BankAppWithAPI.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Operations", (string)null);
+                    b.ToTable("Operations");
 
                     b.HasDiscriminator<int>("OperationType");
 

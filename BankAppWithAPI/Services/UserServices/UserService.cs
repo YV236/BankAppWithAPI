@@ -42,7 +42,7 @@ namespace BankAppWithAPI.Services.UserServices
             }
             catch (Exception ex)
             {
-                return serviceResponse.CreateErrorResponse(new GetUserDto(), ex.Message, HttpStatusCode.InternalServerError);
+                serviceResponse.CreateErrorResponse(new GetUserDto(), ex.Message, HttpStatusCode.InternalServerError);
             }
 
             return serviceResponse;

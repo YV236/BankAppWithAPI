@@ -12,6 +12,34 @@ namespace BankAppWithAPI.Services.BankAccountService
 {
     public class BankAccountService(DataContext _context, IMapper _mapper) : IBankAccountService
     {
+        public async Task<ServiceResponse<GetBankAccountDto>> GetConcreteBankAccount(ClaimsPrincipal user)
+        {
+            var serviceResponse = new ServiceResponse<GetBankAccountDto>();
+
+            try
+            {
+                var getUser = await user.FindUser(_context);
+
+                if (getUser == null)
+                    return serviceResponse.CreateErrorResponse(new GetBankAccountDto(), "Unable to find the user.", HttpStatusCode.NotFound);
+
+                if (getUser.AccountCards!.Count == 0)
+                    return serviceResponse.CreateErrorResponse(new GetBankAccountDto(), "You don't have any bank accounts at the moment.", HttpStatusCode.NotFound);
+
+                var bankAccountCard = getUser.AccountCards.FirstOrDefault(ac => ac.Account!.IsActive == true);
+                var bankAccountDto = _mapper.Map<GetBankAccountDto>(bankAccountCard!.Account);
+
+                serviceResponse.Data = bankAccountDto;
+                serviceResponse.IsSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.CreateErrorResponse(new GetBankAccountDto(), ex.Message, HttpStatusCode.InternalServerError);
+            }
+
+            return serviceResponse;
+        }
+
         public async Task<ServiceResponse<GetBankAccountDto>> CreateBankAccount(CreateBankAccountDto bankAccountDto, ClaimsPrincipal user)
         {
             var serviceResponse = new ServiceResponse<GetBankAccountDto>();
@@ -53,7 +81,7 @@ namespace BankAppWithAPI.Services.BankAccountService
 
             }catch(Exception ex)
             {
-                return serviceResponse.CreateErrorResponse(new GetBankAccountDto(), ex.Message, HttpStatusCode.InternalServerError);
+                serviceResponse.CreateErrorResponse(new GetBankAccountDto(), ex.Message, HttpStatusCode.InternalServerError);
             }
 
             return serviceResponse;
@@ -86,7 +114,7 @@ namespace BankAppWithAPI.Services.BankAccountService
             }
             catch(Exception ex)
             {
-                return serviceResponse.CreateErrorResponse(new List<GetBankAccountDto>(), ex.Message, HttpStatusCode.InternalServerError);
+                serviceResponse.CreateErrorResponse(new List<GetBankAccountDto>(), ex.Message, HttpStatusCode.InternalServerError);
             }
 
             return serviceResponse;
@@ -107,13 +135,6 @@ namespace BankAppWithAPI.Services.BankAccountService
             while (!isUnique);
 
             return iban;
-        }
-
-        private string GenerateRandomAccountNumber()
-        {
-            var random1 = new Random();
-            var random2 = new Random();
-            return random2.Next(10000000, 99999999).ToString("D8") + random1.Next(10000000, 99999999).ToString("D8");
         }
 
         //Method for IBAN generation
@@ -140,6 +161,13 @@ namespace BankAppWithAPI.Services.BankAccountService
 
             // Return of final IBAN
             return result;
+        }
+
+        private string GenerateRandomAccountNumber()
+        {
+            var random1 = new Random();
+            var random2 = new Random();
+            return random2.Next(10000000, 99999999).ToString("D8") + random1.Next(10000000, 99999999).ToString("D8");
         }
 
         // Method for calculating check digits
@@ -185,7 +213,6 @@ namespace BankAppWithAPI.Services.BankAccountService
 
             string numericIBAN = ReplaceLettersWithNumbers(number);
 
-            // Обчислення суми цифр
             for (int i = numericIBAN.Length - 1; i >= 0; i--)
             {
                 int n = int.Parse(numericIBAN[i].ToString());

@@ -61,7 +61,7 @@ namespace BankAppWithAPI.Services.CardService
             }
             catch (Exception ex)
             {
-                return serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
+                serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
             }
 
             return serviceResponse;
@@ -101,7 +101,6 @@ namespace BankAppWithAPI.Services.CardService
                 // Adding a check digit
                 sb.Append(CalculateLuhnCheckDigit(sb.ToString()));
 
-                // Тут іде перевірка чи число відповідає алгоритму Луна
                 if(ValidateLuhnCheck(sb.ToString()))
                 {
                     check = true;
@@ -145,7 +144,6 @@ namespace BankAppWithAPI.Services.CardService
             int sum = 0;
             bool alternate = false;
 
-            // Обчислення суми цифр
             for (int i = number.Length - 1; i >= 0; i--)
             {
                 int n = int.Parse(number[i].ToString());

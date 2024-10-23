@@ -1,4 +1,6 @@
-﻿namespace BankAppWithAPI.Models
+﻿using BankAppWithAPI.Models.Operations;
+
+namespace BankAppWithAPI.Models
 {
     public class BankAccount
     {
@@ -9,6 +11,7 @@
         public string AccountName { get; set; } = "MyBankAccount";
         public DateTime DateOfCreation { get; set; }
 
-        public List<BankAccountCard> AccountCards { get; set; } = new List<BankAccountCard>();
+        public virtual List<BankAccountCard> AccountCards { get; set; } = new List<BankAccountCard>();
+        public virtual List<Operation> Operations { get; set; } = new List<Operation>();
     }
 }

@@ -8,8 +8,8 @@ namespace BankAppWithAPI.Models
         public string? UserLastName { get; set; }
         public string? Address { get; set; }
         public DateTime DateOfCreation { get; set; }
-        public Card? Card { get; set; }
-        public List<BankAccountCard>? AccountCards { get; set; } 
+        public virtual Card? Card { get; set; }
+        public virtual List<BankAccountCard>? AccountCards { get; set; } 
 
     }
 }
