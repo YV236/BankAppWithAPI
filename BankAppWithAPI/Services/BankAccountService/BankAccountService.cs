@@ -26,8 +26,8 @@ namespace BankAppWithAPI.Services.BankAccountService
                 if (getUser.AccountCards!.Count == 0)
                     return serviceResponse.CreateErrorResponse(new GetBankAccountDto(), "You don't have any bank accounts at the moment.", HttpStatusCode.NotFound);
 
-                var bankAccountCard = getUser.AccountCards.FirstOrDefault(ac => ac.Account!.IsActive == true);
-                var bankAccountDto = _mapper.Map<GetBankAccountDto>(bankAccountCard!.Account);
+                var bankAccountDto = _mapper.Map<GetBankAccountDto>(getUser.AccountCards
+                    .FirstOrDefault(ac => ac.Account!.IsActive == true)!.Account);
 
                 serviceResponse.Data = bankAccountDto;
                 serviceResponse.IsSuccessful = true;
@@ -166,8 +166,7 @@ namespace BankAppWithAPI.Services.BankAccountService
         private string GenerateRandomAccountNumber()
         {
             var random1 = new Random();
-            var random2 = new Random();
-            return random2.Next(10000000, 99999999).ToString("D8") + random1.Next(10000000, 99999999).ToString("D8");
+            return random1.Next(10000000, 99999999).ToString("D8") + random1.Next(10000000, 99999999).ToString("D8");
         }
 
         // Method for calculating check digits
