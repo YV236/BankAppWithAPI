@@ -11,5 +11,15 @@ namespace BankAppWithAPI.Services.OperationService
         {
             throw new NotImplementedException();
         }
+
+        public Task<ServiceResponse<OperationResultDto>> Transfer(OperationRequestDto request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

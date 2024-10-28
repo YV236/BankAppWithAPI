@@ -6,5 +6,7 @@ namespace BankAppWithAPI.Services.OperationService
     public interface IOperationService
     {
         Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request);
+        Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request);
+        Task<ServiceResponse<OperationResultDto>> Transfer(OperationRequestDto request);
     }
 }
