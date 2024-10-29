@@ -19,9 +19,7 @@ namespace BankAppWithAPI
             CreateMap<UpdateUserDto, User>();
             CreateMap<Card, GetCardDto>();
             CreateMap<BankAccount, GetBankAccountDto>();
-            CreateMap<OperationRequestDto, DepositOperation>();
-            CreateMap<OperationRequestDto, WithdrawOperation>();
-            CreateMap<OperationRequestDto, TransferOperation>();
+            CreateMap<DepositOperation, OperationResultDto>();
         }
     }
 }

@@ -4,9 +4,9 @@ namespace BankAppWithAPI.Dtos.Operation
 {
     public class OperationRequestDto
     {
-        public Models.BankAccount? Account { get; set; }
-        public Models.BankAccount? DestinationAccount { get; set; }
-        public decimal? Amount { get; set; }
+        public string IBAN { get; set; } = string.Empty;
+        public string DestinationIBAN { get; set; } = string.Empty;
+        public decimal Amount { get; set; } = 0;
         public OperationType OperationType { get; set; }
     }
 }
