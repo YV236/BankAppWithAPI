@@ -21,5 +21,13 @@ namespace BankAppWithAPI.Controllers.BankAccount
             return StatusCode((int)response.StatusCode, response);
         }
 
+        [HttpPost("Withdraw")]
+        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Withdraw(OperationRequestDto request)
+        {
+            var response = await _operationService.Withdraw(request);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
+
     }
 }

@@ -56,9 +56,47 @@ namespace BankAppWithAPI.Services.OperationService
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request)
+        public async Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request)
         {
-            throw new NotImplementedException();
+            var serviceResponse = new ServiceResponse<OperationResultDto>();
+
+            try
+            {
+                var account = await _context.BankAccounts.FirstOrDefaultAsync(b => request.IBAN == b.IBAN);
+
+                if (account == null)
+                    return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
+
+                if (request.Amount > account!.Balance)
+                    return serviceResponse.CreateErrorResponse(new OperationResultDto(), "You don't have enough funds", HttpStatusCode.BadRequest);
+
+                account.Balance -= request.Amount;
+
+                var withdraw = new WithdrawOperation
+                {
+                    AccountId = account.Id,
+                    Amount = request.Amount,
+                    BalanceAfter = account.Balance,
+                    Account = account,
+                    OperationDate = DateTime.UtcNow,
+                };
+
+                _context.Operations.Add(withdraw);
+                await _context.SaveChangesAsync();
+
+                var result = _mapper.Map<OperationResultDto>(withdraw);
+
+                serviceResponse.Data = result;
+                serviceResponse.IsSuccessful = true;
+                serviceResponse.Message = "Money successfully withdrawn to your account";
+
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.CreateErrorResponse(new OperationResultDto(), ex.Message, HttpStatusCode.InternalServerError);
+            }
+
+            return serviceResponse;
         }
     }
 }
