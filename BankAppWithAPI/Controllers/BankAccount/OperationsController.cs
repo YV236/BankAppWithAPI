@@ -14,17 +14,17 @@ namespace BankAppWithAPI.Controllers.BankAccount
     public class OperationsController(IOperationService _operationService) : ControllerBase
     {
         [HttpPost("Deposit")]
-        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Deposit(OperationRequestDto request)
+        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Deposit(OperationRequestDto request, string CardNumber)
         {
-            var response = await _operationService.Deposit(request);
+            var response = await _operationService.Deposit(request, CardNumber);
 
             return StatusCode((int)response.StatusCode, response);
         }
 
         [HttpPost("Withdraw")]
-        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Withdraw(OperationRequestDto request)
+        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Withdraw(OperationRequestDto request, string CardNumber)
         {
-            var response = await _operationService.Withdraw(request);
+            var response = await _operationService.Withdraw(request, CardNumber);
 
             return StatusCode((int)response.StatusCode, response);
         }

@@ -11,16 +11,19 @@ namespace BankAppWithAPI.Services.OperationService
 {
     public class OperationService(DataContext _context, IMapper _mapper) : IOperationService
     {
-        public async Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request)
+        public async Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request, string card)
         {
             var serviceResponse = new ServiceResponse<OperationResultDto>();
 
             try
             {
-                var account = await _context.BankAccounts.FirstOrDefaultAsync(b => request.IBAN == b.IBAN);
+                var account = await card.FindActiveAccount(_context);
 
                 if (account == null)
                     return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
+
+                if (request.Amount < 0)
+                    throw new Exception("Sorry, something went wrong");
 
                 account.Balance += request.Amount;
 
@@ -56,13 +59,13 @@ namespace BankAppWithAPI.Services.OperationService
             throw new NotImplementedException();
         }
 
-        public async Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request)
+        public async Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request, string card)
         {
             var serviceResponse = new ServiceResponse<OperationResultDto>();
 
             try
             {
-                var account = await _context.BankAccounts.FirstOrDefaultAsync(b => request.IBAN == b.IBAN);
+                var account = await card.FindActiveAccount(_context);
 
                 if (account == null)
                     return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
@@ -88,7 +91,7 @@ namespace BankAppWithAPI.Services.OperationService
 
                 serviceResponse.Data = result;
                 serviceResponse.IsSuccessful = true;
-                serviceResponse.Message = "Money successfully withdrawn to your account";
+                serviceResponse.Message = "Money successfully withdrawn from your account";
 
             }
             catch (Exception ex)
