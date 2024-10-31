@@ -37,8 +37,8 @@ namespace BankAppWithAPI.Services.CardService
             {
                 var cardNumber = await GenerateUniqueCardNumber(addCardDto.PaymentSystem);
 
-                CreatePinHash(addCardDto.PinCode, out byte[] pinHash, out byte[] pinSalt);
-                CreateCVVHash(addCardDto.PinCode, out byte[] CVVHash, out byte[] CVVSalt);
+                HashingExtension.CreateHash(addCardDto.PinCode, out byte[] pinHash, out byte[] pinSalt);
+                HashingExtension.CreateHash(addCardDto.PinCode, out byte[] CVVHash, out byte[] CVVSalt);
 
                 var card = new Card
                 {
@@ -160,30 +160,6 @@ namespace BankAppWithAPI.Services.CardService
             }
 
             return sum % 10 == 0;
-        }
-
-        private void CreatePinHash(string pinCode, out byte[] pinHash, out byte[] pinSalt)
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                pinSalt = hmac.Key;
-                using (var pbkdf2 = new System.Security.Cryptography.Rfc2898DeriveBytes(pinCode, pinSalt, 10000))
-                {
-                    pinHash = pbkdf2.GetBytes(32);
-                }
-            }
-        }
-
-        private void CreateCVVHash(string pinCode, out byte[] CVVHash, out byte[] CVVSalt)
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                CVVSalt = hmac.Key;
-                using (var pbkdf2 = new System.Security.Cryptography.Rfc2898DeriveBytes(pinCode, CVVSalt, 10000))
-                {
-                    CVVHash = pbkdf2.GetBytes(32);
-                }
-            }
         }
     }    
 }
