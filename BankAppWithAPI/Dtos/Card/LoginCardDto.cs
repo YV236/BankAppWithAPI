@@ -3,7 +3,7 @@
     public class LoginCardDto
     {
         public string CardNumber { get; set; } = string.Empty;
-        public short PinCode { get; set; }
+        public string PinCode { get; set; } = string.Empty;
         public DateTime ExpiryDate { get; set; }
     }
 }
