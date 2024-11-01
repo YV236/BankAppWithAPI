@@ -13,12 +13,17 @@ namespace BankAppWithAPI.Services.CardService
     public class CardService(DataContext _context, IMapper _mapper) : ICardService
     {
 
+        public async Task<ServiceResponse<GetCardDto>> Login(LoginCardDto loginCardDto)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<ServiceResponse<GetCardDto>> CreateCard(AddCardDto addCardDto, ClaimsPrincipal userToFind)
         {
             var serviceResponse = new ServiceResponse<GetCardDto>();
 
             if (!addCardDto.PinCode.All(char.IsDigit) || addCardDto.PinCode.Length != 4)
-                return serviceResponse.CreateErrorResponse(null!, $"PinCode {addCardDto.PinCode} in not valid. It must contain digits and contain 4 numbers",
+                return serviceResponse.CreateErrorResponse(null!, $"PinCode '{addCardDto.PinCode}' in not valid. It must contain digits and contain 4 numbers",
                     HttpStatusCode.UnprocessableEntity);
 
 
