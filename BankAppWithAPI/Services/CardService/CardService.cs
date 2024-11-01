@@ -13,9 +13,36 @@ namespace BankAppWithAPI.Services.CardService
     public class CardService(DataContext _context, IMapper _mapper) : ICardService
     {
 
-        public async Task<ServiceResponse<GetCardDto>> Login(LoginCardDto loginCardDto)
+        public async Task<ServiceResponse<string>> Login(LoginCardDto loginCardDto)
         {
-            throw new NotImplementedException();
+            var serviceResponse = new ServiceResponse<string>();
+
+            try
+            {
+
+                var card = await _context.Cards.FirstOrDefaultAsync(u => u.CardNumber == loginCardDto.CardNumber);
+
+                if (card == null)
+                    return serviceResponse.CreateErrorResponse(null!, $"Sorry, but the card with this" +
+                        $" '{loginCardDto.CardNumber}' number no longer exists.", HttpStatusCode.NotFound);
+
+                if (card.ExpiryDate < DateTime.UtcNow)
+                    return serviceResponse.CreateErrorResponse(null!, $"Sorry, but your card '{loginCardDto.CardNumber}' is expired." +
+                        $"Your card expired in '{card.ExpiryDate}' but now is '{DateTime.UtcNow}'", HttpStatusCode.Gone);
+
+                if (HashingExtension.VerifyPasswordHash(loginCardDto.PinCode, card.PinHash, card.PinSalt) == false)
+                    return serviceResponse.CreateErrorResponse(null!, $"Invalid pin code", HttpStatusCode.BadRequest);
+
+                serviceResponse.Data = HashingExtension.CreateToken(card);
+                serviceResponse.IsSuccessful = true;
+                serviceResponse.Message = "Card logged in successfully";
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.CreateErrorResponse(null!, ex.Message, HttpStatusCode.InternalServerError);
+            }
+
+            return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetCardDto>> CreateCard(AddCardDto addCardDto, ClaimsPrincipal userToFind)
