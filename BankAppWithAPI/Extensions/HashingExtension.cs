@@ -1,4 +1,8 @@
 ﻿
+
+using BankAppWithAPI.Models;
+using Microsoft.AspNetCore.Identity;
+
 namespace BankAppWithAPI.Extensions
 {
     public static class HashingExtension
@@ -12,6 +16,15 @@ namespace BankAppWithAPI.Extensions
                 {
                     Hash = pbkdf2.GetBytes(32);
                 }
+            }
+        }
+
+        public static bool VerifyPasswordHash(string pinCode, byte[] pinHash, byte[] pinSalt)
+        {
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(pinSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(pinCode));
+                return computedHash.SequenceEqual(pinHash);
             }
         }
     }
