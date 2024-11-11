@@ -6,6 +6,5 @@ namespace BankAppWithAPI.Dtos.Operation
     {
         public string DestinationIBAN { get; set; } = string.Empty;
         public decimal Amount { get; set; } = 0;
-        public OperationType OperationType { get; set; }
     }
 }
