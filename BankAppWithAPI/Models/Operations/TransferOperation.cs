@@ -4,5 +4,6 @@
     {
         public Guid DestinationAccountId { get; set; }
         public virtual BankAccount? DestinationAccount { get; set; }
+        public override OperationType OperationType => OperationType.Transfer;
     }
 }
