@@ -31,7 +31,8 @@ namespace BankAppWithAPI.Extensions
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, card.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, card.Id.ToString()),
+                new Claim(ClaimTypes.Name, card.CardNumber.ToString())
             };
             var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
 

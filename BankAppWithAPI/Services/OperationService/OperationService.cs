@@ -11,7 +11,7 @@ namespace BankAppWithAPI.Services.OperationService
 {
     public class OperationService(DataContext _context, IMapper _mapper) : IOperationService
     {
-        public async Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request, string card)
+        public async Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request, string card, ClaimsPrincipal user)
         {
             var serviceResponse = new ServiceResponse<OperationResultDto>();
 
@@ -39,7 +39,15 @@ namespace BankAppWithAPI.Services.OperationService
                 _context.Operations.Add(deposit);
                 await _context.SaveChangesAsync();
 
-                var result = _mapper.Map<OperationResultDto>(deposit);
+                var result = new OperationResultDto
+                {
+                    IBAN = deposit.Account.IBAN,
+                    AccountName = deposit.Account.AccountName,
+                    Amount = request.Amount,
+                    BalanceAfter = deposit.BalanceAfter,
+                    OperationDate = deposit.OperationDate,
+                    OperationType = deposit.OperationType,
+                };
 
                 serviceResponse.Data = result;
                 serviceResponse.IsSuccessful = true;
@@ -87,7 +95,15 @@ namespace BankAppWithAPI.Services.OperationService
                 _context.Operations.Add(withdraw);
                 await _context.SaveChangesAsync();
 
-                var result = _mapper.Map<OperationResultDto>(withdraw);
+                var result = new OperationResultDto
+                {
+                    IBAN = withdraw.Account.IBAN,
+                    AccountName = withdraw.Account.AccountName,
+                    Amount = request.Amount,
+                    BalanceAfter = withdraw.BalanceAfter,
+                    OperationDate = withdraw.OperationDate,
+                    OperationType = withdraw.OperationType,
+                };
 
                 serviceResponse.Data = result;
                 serviceResponse.IsSuccessful = true;
