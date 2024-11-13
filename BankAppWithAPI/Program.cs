@@ -10,6 +10,7 @@ using System.Text;
 using BankAppWithAPI.Services.BankAccountService;
 using BankAppWithAPI.Services.CardService;
 using BankAppWithAPI.Services.OperationService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,25 @@ builder.Services.AddSwaggerGen(options =>
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey
     });
     options.OperationFilter<Swashbuckle.AspNetCore.Filters.SecurityRequirementsOperationFilter>();
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer("MyTokenScheme", options =>
+{
+    var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+
+    if (string.IsNullOrEmpty(secretKey))
+    {
+        throw new Exception("JWT secret key is not set in environment variables.");
+    }
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
 });
 
 builder.Services.AddAuthorization();
