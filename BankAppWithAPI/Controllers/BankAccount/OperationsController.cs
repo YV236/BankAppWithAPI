@@ -15,18 +15,18 @@ namespace BankAppWithAPI.Controllers.BankAccount
         //TODO add use of ClaimsPrincipal
         [HttpPost("Deposit")]
         [Authorize(AuthenticationSchemes = "MyTokenScheme")]
-        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Deposit(OperationRequestDto request, string CardNumber)
+        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Deposit(OperationRequestDto request)
         {
-            var response = await _operationService.Deposit(request, CardNumber, User);
+            var response = await _operationService.Deposit(request, User);
 
             return StatusCode((int)response.StatusCode, response);
         }
 
         [HttpPost("Withdraw")]
         [Authorize(AuthenticationSchemes = "MyTokenScheme")]
-        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Withdraw(OperationRequestDto request, string CardNumber)
+        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Withdraw(OperationRequestDto request)
         {
-            var response = await _operationService.Withdraw(request, CardNumber);
+            var response = await _operationService.Withdraw(request, User);
 
             return StatusCode((int)response.StatusCode, response);
         }

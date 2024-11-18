@@ -11,7 +11,7 @@ namespace BankAppWithAPI.Services.OperationService
 {
     public class OperationService(DataContext _context, IMapper _mapper) : IOperationService
     {
-        public async Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request, string card, ClaimsPrincipal user)
+        public async Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request, ClaimsPrincipal card)
         {
             var serviceResponse = new ServiceResponse<OperationResultDto>();
 
@@ -67,7 +67,7 @@ namespace BankAppWithAPI.Services.OperationService
             throw new NotImplementedException();
         }
 
-        public async Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request, string card)
+        public async Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request, ClaimsPrincipal card)
         {
             var serviceResponse = new ServiceResponse<OperationResultDto>();
 
