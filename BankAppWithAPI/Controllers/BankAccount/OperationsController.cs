@@ -12,7 +12,6 @@ namespace BankAppWithAPI.Controllers.BankAccount
     [Route("[controller]")]
     public class OperationsController(IOperationService _operationService) : ControllerBase
     {
-        //TODO add use of ClaimsPrincipal
         [HttpPost("Deposit")]
         [Authorize(AuthenticationSchemes = "MyTokenScheme")]
         public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Deposit(OperationRequestDto request)
