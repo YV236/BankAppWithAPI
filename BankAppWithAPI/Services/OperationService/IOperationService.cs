@@ -7,6 +7,6 @@ namespace BankAppWithAPI.Services.OperationService
     {
         Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request, ClaimsPrincipal card);
         Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request, ClaimsPrincipal card);
-        Task<ServiceResponse<OperationResultDto>> Transfer(OperationRequestDto request);
+        Task<ServiceResponse<OperationResultDto>> Transfer(OperationRequestDto request, ClaimsPrincipal user);
     }
 }

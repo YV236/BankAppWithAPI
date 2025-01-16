@@ -18,7 +18,20 @@ namespace BankAppWithAPI.Extensions
             )!;
         }
 
-        public static async Task<BankAccount> FindActiveAccount(this ClaimsPrincipal cardToFind, DataContext context)
+        public static async Task<BankAccount> FindUserActiveAccount(this ClaimsPrincipal userToFind, DataContext context)
+        {
+            var id = userToFind.GetNameIdentifier();
+
+             var user = await userToFind.FindEntityAsync<User>(
+                context,
+                card => card.Id.ToString() == id,
+                query => query.Include(c => c.AccountCards).ThenInclude(ac => ac.Account)
+                )!;
+
+            return user!.AccountCards.First(ac => ac.Account!.IsActive).Account!;
+        }
+
+        public static async Task<BankAccount> FindCardActiveAccount(this ClaimsPrincipal cardToFind, DataContext context)
         {
             var id = cardToFind.GetNameIdentifier();
 

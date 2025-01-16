@@ -17,7 +17,7 @@ namespace BankAppWithAPI.Services.OperationService
 
             try
             {
-                var account = await card.FindActiveAccount(_context);
+                var account = await card.FindCardActiveAccount(_context);
 
                 if (account == null)
                     return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
@@ -62,9 +62,62 @@ namespace BankAppWithAPI.Services.OperationService
             return serviceResponse;
         }
 
-        public Task<ServiceResponse<OperationResultDto>> Transfer(OperationRequestDto request)
+        public async Task<ServiceResponse<OperationResultDto>> Transfer(OperationRequestDto request, ClaimsPrincipal user)
         {
-            throw new NotImplementedException();
+            var serviceResponse = new ServiceResponse<OperationResultDto>();
+
+            try
+            {
+                var fromAccount = await user.FindUserActiveAccount(_context);
+
+                if(fromAccount == null)
+                    return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
+
+                if (request.Amount > fromAccount!.Balance)
+                    return serviceResponse.CreateErrorResponse(new OperationResultDto(), "You don't have enough funds", HttpStatusCode.BadRequest);
+
+                var toAccount = await _context.BankAccounts.FirstOrDefaultAsync(ac => ac.IBAN == request.DestinationIBAN);
+
+                if (toAccount == null)
+                    return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
+
+                fromAccount.Balance -= request.Amount;
+                toAccount.Balance += request.Amount;
+
+                var transfer = new TransferOperation
+                {
+                    AccountId = fromAccount.Id,
+                    Amount = request.Amount,
+                    BalanceAfter = fromAccount.Balance,
+                    Account = fromAccount,
+                    DestinationAccount = toAccount,
+                    OperationDate = DateTime.UtcNow,
+                };
+
+                _context.Operations.Add(transfer);
+                await _context.SaveChangesAsync();
+
+                var result = new OperationResultDto
+                {
+                    IBAN = transfer.Account.IBAN,
+                    AccountName = transfer.Account.AccountName,
+                    Amount = transfer.Amount,
+                    BalanceAfter = transfer.BalanceAfter,
+                    OperationDate = transfer.OperationDate,
+                    OperationType = transfer.OperationType,
+                };
+
+                serviceResponse.Data = result;
+                serviceResponse.IsSuccessful = true;
+                serviceResponse.Message = $"{transfer.Amount} successfully transferred to '{transfer.DestinationAccount.IBAN}' account";
+
+            }
+            catch(Exception ex)
+            {
+                serviceResponse.CreateErrorResponse(new OperationResultDto(), ex.Message, HttpStatusCode.InternalServerError);
+            }
+
+            return serviceResponse;
         }
 
         public async Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request, ClaimsPrincipal card)
@@ -73,7 +126,7 @@ namespace BankAppWithAPI.Services.OperationService
 
             try
             {
-                var account = await card.FindActiveAccount(_context);
+                var account = await card.FindCardActiveAccount(_context);
 
                 if (account == null)
                     return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
@@ -118,4 +171,5 @@ namespace BankAppWithAPI.Services.OperationService
             return serviceResponse;
         }
     }
+
 }

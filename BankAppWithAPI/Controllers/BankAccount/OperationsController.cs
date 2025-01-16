@@ -30,5 +30,12 @@ namespace BankAppWithAPI.Controllers.BankAccount
             return StatusCode((int)response.StatusCode, response);
         }
 
+        [HttpPost("Transfer")]
+        public async Task<ActionResult<ServiceResponse<OperationRequestDto>>> Transfer(OperationRequestDto request)
+        {
+            var response = await _operationService.Transfer(request, User);
+
+            return StatusCode((int)response.StatusCode, response);
+        }
     }
 }
