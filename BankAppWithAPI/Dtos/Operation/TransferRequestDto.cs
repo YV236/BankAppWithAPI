@@ -2,7 +2,7 @@
 
 namespace BankAppWithAPI.Dtos.Operation
 {
-    public class OperationRequestDto
+    public class TransferRequestDto
     {
         public string DestinationIBAN { get; set; } = string.Empty;
         public decimal Amount { get; set; } = 0;

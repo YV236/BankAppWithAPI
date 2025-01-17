@@ -5,8 +5,8 @@ namespace BankAppWithAPI.Services.OperationService
 {
     public interface IOperationService
     {
-        Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request, ClaimsPrincipal card);
-        Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request, ClaimsPrincipal card);
-        Task<ServiceResponse<OperationResultDto>> Transfer(OperationRequestDto request, ClaimsPrincipal user);
+        Task<ServiceResponse<OperationResultDto>> Deposit(int amount, ClaimsPrincipal card);
+        Task<ServiceResponse<OperationResultDto>> Withdraw(int amount, ClaimsPrincipal card);
+        Task<ServiceResponse<OperationResultDto>> Transfer(TransferRequestDto request, ClaimsPrincipal user);
     }
 }

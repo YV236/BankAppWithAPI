@@ -11,7 +11,7 @@ namespace BankAppWithAPI.Services.OperationService
 {
     public class OperationService(DataContext _context, IMapper _mapper) : IOperationService
     {
-        public async Task<ServiceResponse<OperationResultDto>> Deposit(OperationRequestDto request, ClaimsPrincipal card)
+        public async Task<ServiceResponse<OperationResultDto>> Deposit(int amount, ClaimsPrincipal card)
         {
             var serviceResponse = new ServiceResponse<OperationResultDto>();
 
@@ -22,15 +22,15 @@ namespace BankAppWithAPI.Services.OperationService
                 if (account == null)
                     return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
 
-                if (request.Amount < 0)
+                if (amount < 0)
                     throw new Exception("Sorry, something went wrong");
 
-                account.Balance += request.Amount;
+                account.Balance += amount;
 
                 var deposit = new DepositOperation
                 {
                     AccountId = account.Id,
-                    Amount = request.Amount,
+                    Amount = amount,
                     BalanceAfter = account.Balance,
                     Account = account,
                     OperationDate = DateTime.UtcNow,
@@ -43,7 +43,7 @@ namespace BankAppWithAPI.Services.OperationService
                 {
                     IBAN = deposit.Account.IBAN,
                     AccountName = deposit.Account.AccountName,
-                    Amount = request.Amount,
+                    Amount = amount,
                     BalanceAfter = deposit.BalanceAfter,
                     OperationDate = deposit.OperationDate,
                     OperationType = deposit.OperationType,
@@ -62,7 +62,7 @@ namespace BankAppWithAPI.Services.OperationService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<OperationResultDto>> Transfer(OperationRequestDto request, ClaimsPrincipal user)
+        public async Task<ServiceResponse<OperationResultDto>> Transfer(TransferRequestDto request, ClaimsPrincipal user)
         {
             var serviceResponse = new ServiceResponse<OperationResultDto>();
 
@@ -120,7 +120,7 @@ namespace BankAppWithAPI.Services.OperationService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<OperationResultDto>> Withdraw(OperationRequestDto request, ClaimsPrincipal card)
+        public async Task<ServiceResponse<OperationResultDto>> Withdraw(int amount, ClaimsPrincipal card)
         {
             var serviceResponse = new ServiceResponse<OperationResultDto>();
 
@@ -131,15 +131,15 @@ namespace BankAppWithAPI.Services.OperationService
                 if (account == null)
                     return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
 
-                if (request.Amount > account!.Balance)
+                if (amount > account!.Balance)
                     return serviceResponse.CreateErrorResponse(new OperationResultDto(), "You don't have enough funds", HttpStatusCode.BadRequest);
 
-                account.Balance -= request.Amount;
+                account.Balance -= amount;
 
                 var withdraw = new WithdrawOperation
                 {
                     AccountId = account.Id,
-                    Amount = request.Amount,
+                    Amount = amount,
                     BalanceAfter = account.Balance,
                     Account = account,
                     OperationDate = DateTime.UtcNow,
@@ -152,7 +152,7 @@ namespace BankAppWithAPI.Services.OperationService
                 {
                     IBAN = withdraw.Account.IBAN,
                     AccountName = withdraw.Account.AccountName,
-                    Amount = request.Amount,
+                    Amount = amount,
                     BalanceAfter = withdraw.BalanceAfter,
                     OperationDate = withdraw.OperationDate,
                     OperationType = withdraw.OperationType,

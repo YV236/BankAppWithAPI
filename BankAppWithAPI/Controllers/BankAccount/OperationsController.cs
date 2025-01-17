@@ -14,24 +14,24 @@ namespace BankAppWithAPI.Controllers.BankAccount
     {
         [HttpPost("Deposit")]
         [Authorize(AuthenticationSchemes = "MyTokenScheme")]
-        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Deposit(OperationRequestDto request)
+        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Deposit(int amount)
         {
-            var response = await _operationService.Deposit(request, User);
+            var response = await _operationService.Deposit(amount, User);
 
             return StatusCode((int)response.StatusCode, response);
         }
 
         [HttpPost("Withdraw")]
         [Authorize(AuthenticationSchemes = "MyTokenScheme")]
-        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Withdraw(OperationRequestDto request)
+        public async Task<ActionResult<ServiceResponse<OperationResultDto>>> Withdraw(int amount)
         {
-            var response = await _operationService.Withdraw(request, User);
+            var response = await _operationService.Withdraw(amount, User);
 
             return StatusCode((int)response.StatusCode, response);
         }
 
         [HttpPost("Transfer")]
-        public async Task<ActionResult<ServiceResponse<OperationRequestDto>>> Transfer(OperationRequestDto request)
+        public async Task<ActionResult<ServiceResponse<TransferRequestDto>>> Transfer(TransferRequestDto request)
         {
             var response = await _operationService.Transfer(request, User);
 
