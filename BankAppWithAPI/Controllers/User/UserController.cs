@@ -5,6 +5,7 @@ using BankAppWithAPI.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
 using BankAppWithAPI.Data;
 using BankAppWithAPI.Models;
+using BankAppWithAPI.Services.Interfaces;
 
 namespace BankAppWithAPI.Controllers.User
 {

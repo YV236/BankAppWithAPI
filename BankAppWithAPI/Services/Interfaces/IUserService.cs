@@ -1,7 +1,7 @@
 ﻿using BankAppWithAPI.Dtos.User;
 using BankAppWithAPI.Models;
 
-namespace BankAppWithAPI.Services.UserServices
+namespace BankAppWithAPI.Services.Interfaces
 {
     public interface IUserService
     {

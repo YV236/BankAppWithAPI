@@ -1,7 +1,7 @@
 ﻿using BankAppWithAPI.Dtos.Card;
 using BankAppWithAPI.Models;
 
-namespace BankAppWithAPI.Services.CardService
+namespace BankAppWithAPI.Services.Interfaces
 {
     public interface ICardService
     {

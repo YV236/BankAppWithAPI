@@ -5,9 +5,10 @@ using BankAppWithAPI.Dtos.Operation;
 using BankAppWithAPI.Extensions;
 using BankAppWithAPI.Models;
 using BankAppWithAPI.Models.Operations;
+using BankAppWithAPI.Services.Interfaces;
 using System.Net;
 
-namespace BankAppWithAPI.Services.OperationService
+namespace BankAppWithAPI.Services.Implementations
 {
     public class OperationService(DataContext _context, IMapper _mapper) : IOperationService
     {
@@ -70,7 +71,7 @@ namespace BankAppWithAPI.Services.OperationService
             {
                 var fromAccount = await user.FindUserActiveAccount(_context);
 
-                if(fromAccount == null)
+                if (fromAccount == null)
                     return serviceResponse.CreateErrorResponse(new OperationResultDto(), "Account not found.", HttpStatusCode.NotFound);
 
                 if (request.Amount > fromAccount!.Balance)
@@ -112,7 +113,7 @@ namespace BankAppWithAPI.Services.OperationService
                 serviceResponse.Message = $"{transfer.Amount} successfully transferred to '{transfer.DestinationAccount.IBAN}' account";
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 serviceResponse.CreateErrorResponse(new OperationResultDto(), ex.Message, HttpStatusCode.InternalServerError);
             }

@@ -1,7 +1,7 @@
 ﻿using Azure;
 using BankAppWithAPI.Dtos.Operation;
 using BankAppWithAPI.Models;
-using BankAppWithAPI.Services.OperationService;
+using BankAppWithAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

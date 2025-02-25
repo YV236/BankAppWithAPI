@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Identity;
 using BankAppWithAPI.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using BankAppWithAPI.Services.BankAccountService;
-using BankAppWithAPI.Services.CardService;
-using BankAppWithAPI.Services.OperationService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BankAppWithAPI.Services.Implementations;
+using BankAppWithAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

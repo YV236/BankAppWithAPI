@@ -1,7 +1,7 @@
 ﻿using BankAppWithAPI.Dtos.BankAccount;
 using BankAppWithAPI.Models;
 
-namespace BankAppWithAPI.Services.BankAccountService
+namespace BankAppWithAPI.Services.Interfaces
 {
     public interface IBankAccountService
     {

@@ -8,8 +8,9 @@ using System.Text.RegularExpressions;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using BankAppWithAPI.Extensions;
+using BankAppWithAPI.Services.Interfaces;
 
-namespace BankAppWithAPI.Services.UserServices
+namespace BankAppWithAPI.Services.Implementations
 {
     public class UserService : IUserService
     {
@@ -75,7 +76,7 @@ namespace BankAppWithAPI.Services.UserServices
             if (!result.Succeeded)
                 return serviceResponse.CreateErrorResponse(0, string.Join(", ", result.Errors.Select(e => e.Description)),
                     HttpStatusCode.BadRequest);
-            
+
 
             serviceResponse.Data = 1;
             serviceResponse.IsSuccessful = true;
@@ -93,7 +94,7 @@ namespace BankAppWithAPI.Services.UserServices
                 return serviceResponse.CreateErrorResponse(new GetUserDto(), "Error while updating. Some of the properties maybe filled incorrect",
                     HttpStatusCode.UnprocessableEntity);
 
-             if (userUpdateDto.PhoneNumber.Any(c => !char.IsDigit(c)) || userUpdateDto.PhoneNumber.Length < 9)
+            if (userUpdateDto.PhoneNumber.Any(c => !char.IsDigit(c)) || userUpdateDto.PhoneNumber.Length < 9)
                 return serviceResponse.CreateErrorResponse(new GetUserDto(),
                    $"Error while registering. Phone number '{userUpdateDto.PhoneNumber}' must contain numbers only. And contain at least 9 digits",
                    HttpStatusCode.UnprocessableEntity);

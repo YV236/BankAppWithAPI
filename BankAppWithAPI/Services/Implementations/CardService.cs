@@ -7,8 +7,9 @@ using System.Net;
 using System.Numerics;
 using System.Text;
 using BankAppWithAPI.Extensions;
+using BankAppWithAPI.Services.Interfaces;
 
-namespace BankAppWithAPI.Services.CardService
+namespace BankAppWithAPI.Services.Implementations
 {
     public class CardService(DataContext _context, IMapper _mapper) : ICardService
     {
@@ -133,7 +134,7 @@ namespace BankAppWithAPI.Services.CardService
                 // Adding a check digit
                 sb.Append(CalculateLuhnCheckDigit(sb.ToString()));
 
-                if(ValidateLuhnCheck(sb.ToString()))
+                if (ValidateLuhnCheck(sb.ToString()))
                 {
                     check = true;
                 }
@@ -167,7 +168,7 @@ namespace BankAppWithAPI.Services.CardService
                 alternate = !alternate;
             }
 
-            int checkDigit = (10 - (sum % 10)) % 10;
+            int checkDigit = (10 - sum % 10) % 10;
             return checkDigit;
         }
 
@@ -193,5 +194,5 @@ namespace BankAppWithAPI.Services.CardService
 
             return sum % 10 == 0;
         }
-    }    
+    }
 }
