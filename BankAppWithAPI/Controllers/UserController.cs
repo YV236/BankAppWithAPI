@@ -7,7 +7,7 @@ using BankAppWithAPI.Data;
 using BankAppWithAPI.Models;
 using BankAppWithAPI.Services.Interfaces;
 
-namespace BankAppWithAPI.Controllers.User
+namespace BankAppWithAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]

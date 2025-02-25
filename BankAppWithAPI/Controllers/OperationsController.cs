@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BankAppWithAPI.Controllers.BankAccount
+namespace BankAppWithAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]

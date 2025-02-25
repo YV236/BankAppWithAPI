@@ -9,7 +9,7 @@ using BankAppWithAPI.Dtos.BankAccount;
 using Azure;
 using BankAppWithAPI.Services.Interfaces;
 
-namespace BankAppWithAPI.Controllers.BankAccount
+namespace BankAppWithAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
