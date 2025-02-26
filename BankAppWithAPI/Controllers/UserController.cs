@@ -11,7 +11,7 @@ namespace BankAppWithAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController(IUserService userService, DataContext context, IMapper mapper)
+    public class UserController(IUserService userService)
         : ControllerBase
     {
         [HttpGet]

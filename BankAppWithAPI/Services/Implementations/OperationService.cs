@@ -10,7 +10,7 @@ using System.Net;
 
 namespace BankAppWithAPI.Services.Implementations
 {
-    public class OperationService(DataContext _context, IMapper _mapper) : IOperationService
+    public class OperationService(DataContext _context) : IOperationService
     {
         public async Task<ServiceResponse<OperationResultDto>> Deposit(int amount, ClaimsPrincipal card)
         {

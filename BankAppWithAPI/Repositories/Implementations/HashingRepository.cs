@@ -1,13 +1,14 @@
 ﻿using BankAppWithAPI.Models;
+using BankAppWithAPI.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace BankAppWithAPI.Extensions
+namespace BankAppWithAPI.Repositories.Implementations
 {
-    public static class HashingExtension
+    public class HashingRepository : IHashingRepository
     {
-        public static void CreateHash(string pinCode, out byte[] Hash, out byte[] Salt)
+        public void CreateHash(string pinCode, out byte[] Hash, out byte[] Salt)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
             {
@@ -18,7 +19,7 @@ namespace BankAppWithAPI.Extensions
                 }
             }
         }
-        public static bool VerifyPasswordHash(string pinCode, byte[] pinHash, byte[] pinSalt)
+        public bool VerifyPasswordHash(string pinCode, byte[] pinHash, byte[] pinSalt)
         {
             using (var pbkdf2 = new System.Security.Cryptography.Rfc2898DeriveBytes(pinCode, pinSalt, 10000))
             {
@@ -27,7 +28,7 @@ namespace BankAppWithAPI.Extensions
             }
         }
 
-        public static string? CreateToken(Card card)
+        public string? CreateToken(Card card)
         {
             var claims = new List<Claim>
             {
@@ -36,7 +37,7 @@ namespace BankAppWithAPI.Extensions
             };
             var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
 
-            if(secretKey is null)
+            if (secretKey is null)
             {
                 throw new Exception("Key token is null");
             }

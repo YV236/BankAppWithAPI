@@ -1,7 +1,6 @@
 ﻿using BankAppWithAPI.Dtos.BankAccount;
 using BankAppWithAPI.Dtos.Card;
 using BankAppWithAPI.Models;
-using BankAppWithAPI.Services.BankAccountService;
 using BankAppWithAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

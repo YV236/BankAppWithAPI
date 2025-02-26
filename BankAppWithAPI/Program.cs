@@ -1,5 +1,4 @@
 global using Microsoft.EntityFrameworkCore;
-global using BankAppWithAPI.Services.UserServices;
 global using System.Security.Claims;
 using BankAppWithAPI.Data;
 using BankAppWithAPI.Models;
@@ -10,6 +9,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using BankAppWithAPI.Services.Implementations;
 using BankAppWithAPI.Services.Interfaces;
+using BankAppWithAPI.Repositories.Interfaces;
+using BankAppWithAPI.Repositories.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,8 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IHashingRepository, HashingRepository>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBankAccountService, BankAccountService>();
 builder.Services.AddScoped<ICardService, CardService>();
