@@ -60,6 +60,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IHashingRepository, HashingRepository>();
+builder.Services.AddScoped<ILuhnNumberGenerator, LuhnNumberGenerator>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBankAccountService, BankAccountService>();
