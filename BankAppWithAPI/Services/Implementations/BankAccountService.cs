@@ -3,6 +3,7 @@ using BankAppWithAPI.Data;
 using BankAppWithAPI.Dtos.BankAccount;
 using BankAppWithAPI.Extensions;
 using BankAppWithAPI.Models;
+using BankAppWithAPI.Repositories.Interfaces;
 using BankAppWithAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -11,7 +12,7 @@ using System.Text;
 
 namespace BankAppWithAPI.Services.Implementations
 {
-    public class BankAccountService(DataContext _context, IMapper _mapper) : IBankAccountService
+    public class BankAccountService(DataContext _context, IMapper _mapper, ILuhnNumberRepository _luhnRepository) : IBankAccountService
     {
         public async Task<ServiceResponse<GetBankAccountDto>> GetConcreteBankAccount(ClaimsPrincipal user)
         {
@@ -47,7 +48,7 @@ namespace BankAppWithAPI.Services.Implementations
 
             try
             {
-                var iban = await GenerateUniqueIBAN();
+                var iban = await _luhnRepository.GenerateUniqueIBAN();
 
                 var newBankAccount = new BankAccount
                 {
@@ -194,13 +195,10 @@ namespace BankAppWithAPI.Services.Implementations
             StringBuilder sb = new StringBuilder();
             foreach (char c in input)
             {
-                if (char.IsLetter(c))
+                if (!char.IsLetter(c))
                 {
-                    int numericValue = c - 'A' + 10;
-                    sb.Append(numericValue);
-                }
-                else
-                {
+                    //int numericValue = c - 'A' + 10;
+                    //sb.Append(numericValue);
                     sb.Append(c);
                 }
             }

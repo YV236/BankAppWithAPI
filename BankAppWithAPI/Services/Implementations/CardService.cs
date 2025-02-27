@@ -13,7 +13,7 @@ using BankAppWithAPI.Repositories.Interfaces;
 
 namespace BankAppWithAPI.Services.Implementations
 {
-    public class CardService(DataContext _context, IMapper _mapper, IHashingRepository _hashingRepository) : ICardService
+    public class CardService(DataContext _context, IMapper _mapper, IHashingRepository _hashingRepository, ILuhnNumberRepository _luhnRepository) : ICardService
     {
         public async Task<ServiceResponse<string>> Login(LoginCardDto loginCardDto)
         {
@@ -21,7 +21,6 @@ namespace BankAppWithAPI.Services.Implementations
 
             try
             {
-
                 var card = await _context.Cards.FirstOrDefaultAsync(u => u.CardNumber == loginCardDto.CardNumber);
 
                 if (card == null)
@@ -69,7 +68,7 @@ namespace BankAppWithAPI.Services.Implementations
 
             try
             {
-                var cardNumber = await GenerateUniqueCardNumber(addCardDto.PaymentSystem);
+                var cardNumber = await _luhnRepository.GenerateUniqueCardNumber(addCardDto.PaymentSystem);
 
                 _hashingRepository.CreateHash(addCardDto.PinCode, out byte[] pinHash, out byte[] pinSalt);
                 _hashingRepository.CreateHash(addCardDto.PinCode, out byte[] CVVHash, out byte[] CVVSalt);

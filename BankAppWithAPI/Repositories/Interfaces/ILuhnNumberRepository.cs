@@ -2,7 +2,7 @@
 
 namespace BankAppWithAPI.Repositories.Interfaces
 {
-    public interface ILuhnNumberGenerator
+    public interface ILuhnNumberRepository
     {
         Task<string> GenerateUniqueCardNumber(PaymentSystem? paymentSystem);
         Task<string> GenerateUniqueIBAN();
