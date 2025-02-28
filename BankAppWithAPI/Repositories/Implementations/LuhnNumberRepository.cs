@@ -1,14 +1,15 @@
 ﻿using BankAppWithAPI.Data;
 using BankAppWithAPI.Models;
 using BankAppWithAPI.Repositories.Interfaces;
+using System;
 using System.Numerics;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BankAppWithAPI.Repositories.Implementations
 {
     public class LuhnNumberRepository(DataContext _context) : ILuhnNumberRepository
     {
+        private static readonly Random _random = new();
         public async Task<string> GenerateUniqueCardNumber(PaymentSystem? paymentSystem)
         {
             string bin = ((int)paymentSystem!).ToString() + "301025";
@@ -28,17 +29,11 @@ namespace BankAppWithAPI.Repositories.Implementations
         private string GenerateRandomCardNumber(string bin)
         {
             StringBuilder sb = new StringBuilder(bin);
-            int length = 16;
             bool check = false;
 
             while (!check)
             {
-                // Generating random numbers for the card until we reach the desired length minus 1 (check digit)
-                Random random = new Random();
-                while (sb.Length < length - 1)
-                {
-                    sb.Append(random.Next(0, 10));
-                }
+                sb.Append(GenerateRandomDigits(8));
 
                 // Adding a check digit
                 sb.Append(CalculateCheckDigits(sb.ToString()));
@@ -79,12 +74,12 @@ namespace BankAppWithAPI.Repositories.Implementations
             string result = "";
             while (!check)
             {
-                string accountNumber = GenerateRandomAccountNumber();
+                string accountNumber = GenerateRandomDigits(16);
                 // Initial IBAN with check digits 00
                 string iban = "00" + bankCode + accountNumber;
 
                 // Calculation of check digits
-                int checkDigits = CalculateCheckDigits(iban, "iban");
+                int checkDigits = CalculateCheckDigits(iban, true);
 
                 // Formatting check digits
                 string formattedCheckDigits = checkDigits.ToString("D2");
@@ -98,52 +93,37 @@ namespace BankAppWithAPI.Repositories.Implementations
             return result;
         }
 
-        private int CalculateCheckDigits(string number, string method = "Card")
+        private int CalculateCheckDigits(string number, bool isIban = false)
         {
-            if(method == "iban")
+            if (isIban)
             {
                 // Move the country code and check digits to the end
                 string rearrangedIBAN = number.Substring(4) + number.Substring(0, 4);
                 // Conversion to BigInteger to execute module 97
                 BigInteger ibanNumber = BigInteger.Parse(rearrangedIBAN);
                 int remainder = (int)(ibanNumber % 97);
-                
+
                 // Calculation of check digits
                 int checkDigits = 98 - remainder;
                 return checkDigits;
             }
-            else
+
+            int sum = 0;
+            bool alternate = false;
+
+            for (int i = number.Length - 1; i >= 0; i--)
             {
-                int sum = 0;
-                bool alternate = false;
-                int n = 0;
-
-                for (int i = number.Length - 1; i >= 0; i--)
-                {
-                    n = int.Parse(number[i].ToString());
-
-                    if (alternate)
-                    {
-                        n *= 2;
-                        if (n > 9)
-                            n -= 9;
-                    }
-
-                    sum += n;
-                    alternate = !alternate;
-                }
-
-                int checkDigit = (10 - sum % 10) % 10;
-                return checkDigit;
+                int n = number[i] - '0';
+                if (alternate && (n *= 2) > 9) n -= 9;
+                sum += n;
+                alternate = !alternate;
             }
 
+            return (10 - sum % 10) % 10;
         }
 
-        private string GenerateRandomAccountNumber()
-        {
-            var random1 = new Random();
-            return random1.Next(10000000, 99999999).ToString("D8") + random1.Next(10000000, 99999999).ToString("D8");
-        }
+        private string GenerateRandomDigits(int length)
+            => new(Enumerable.Range(0, length).Select(_ => (char)('0' + _random.Next(0, 10))).ToArray());
 
         private bool ValidateLuhnCheck(string number)
         {
