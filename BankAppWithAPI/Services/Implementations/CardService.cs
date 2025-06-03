@@ -8,12 +8,10 @@ using System.Numerics;
 using System.Text;
 using BankAppWithAPI.Extensions;
 using BankAppWithAPI.Services.Interfaces;
-using BankAppWithAPI.Repositories.Implementations;
-using BankAppWithAPI.Repositories.Interfaces;
 
 namespace BankAppWithAPI.Services.Implementations
 {
-    public class CardService(DataContext _context, IMapper _mapper, IHashingRepository _hashingRepository, ILuhnNumberRepository _luhnRepository) : ICardService
+    public class CardService(DataContext _context, IMapper _mapper, ILuhnNumberService _luhnRepository) : ICardService
     {
         public async Task<ServiceResponse<string>> Login(LoginCardDto loginCardDto)
         {
@@ -31,10 +29,10 @@ namespace BankAppWithAPI.Services.Implementations
                     return serviceResponse.CreateErrorResponse(null!, $"Sorry, but your card '{loginCardDto.CardNumber}' is expired." +
                         $"Your card expired in '{card.ExpiryDate}' but now is '{DateTime.UtcNow}'", HttpStatusCode.Gone);
 
-                if (_hashingRepository.VerifyPasswordHash(loginCardDto.PinCode, card.PinHash, card.PinSalt) == false)
+                if (HashingExtension.VerifyPasswordHash(loginCardDto.PinCode, card.PinHash, card.PinSalt) == false)
                     return serviceResponse.CreateErrorResponse(null!, $"Invalid pin code", HttpStatusCode.BadRequest);
 
-                serviceResponse.Data = _hashingRepository.CreateToken(card);
+                serviceResponse.Data = HashingExtension.CreateToken(card);
                 serviceResponse.IsSuccessful = true;
                 serviceResponse.Message = "Card logged in successfully";
             }
@@ -70,8 +68,8 @@ namespace BankAppWithAPI.Services.Implementations
             {
                 var cardNumber = await _luhnRepository.GenerateUniqueCardNumber(addCardDto.PaymentSystem);
 
-                _hashingRepository.CreateHash(addCardDto.PinCode, out byte[] pinHash, out byte[] pinSalt);
-                _hashingRepository.CreateHash(addCardDto.PinCode, out byte[] CVVHash, out byte[] CVVSalt);
+                HashingExtension.CreateHash(addCardDto.PinCode, out byte[] pinHash, out byte[] pinSalt);
+                HashingExtension.CreateHash(addCardDto.PinCode, out byte[] CVVHash, out byte[] CVVSalt);
 
                 var card = new Card
                 {

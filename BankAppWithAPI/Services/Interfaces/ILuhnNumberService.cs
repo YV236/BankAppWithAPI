@@ -1,8 +1,8 @@
 ﻿using BankAppWithAPI.Models;
 
-namespace BankAppWithAPI.Repositories.Interfaces
+namespace BankAppWithAPI.Services.Interfaces
 {
-    public interface ILuhnNumberRepository
+    public interface ILuhnNumberService
     {
         Task<string> GenerateUniqueCardNumber(PaymentSystem? paymentSystem);
         Task<string> GenerateUniqueIBAN();

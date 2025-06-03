@@ -3,7 +3,6 @@ using BankAppWithAPI.Data;
 using BankAppWithAPI.Dtos.BankAccount;
 using BankAppWithAPI.Extensions;
 using BankAppWithAPI.Models;
-using BankAppWithAPI.Repositories.Interfaces;
 using BankAppWithAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -12,7 +11,7 @@ using System.Text;
 
 namespace BankAppWithAPI.Services.Implementations
 {
-    public class BankAccountService(DataContext _context, IMapper _mapper, ILuhnNumberRepository _luhnRepository) : IBankAccountService
+    public class BankAccountService(DataContext _context, IMapper _mapper, ILuhnNumberService _luhnRepository) : IBankAccountService
     {
         public async Task<ServiceResponse<GetBankAccountDto>> GetConcreteBankAccount(ClaimsPrincipal user)
         {

@@ -1,13 +1,13 @@
 ﻿using BankAppWithAPI.Data;
 using BankAppWithAPI.Models;
-using BankAppWithAPI.Repositories.Interfaces;
+using BankAppWithAPI.Services.Interfaces;
 using System;
 using System.Numerics;
 using System.Text;
 
-namespace BankAppWithAPI.Repositories.Implementations
+namespace BankAppWithAPI.Services.Implementations
 {
-    public class LuhnNumberRepository(DataContext _context) : ILuhnNumberRepository
+    public class LuhnNumberService(DataContext _context) : ILuhnNumberService
     {
         private static readonly Random _random = new();
         public async Task<string> GenerateUniqueCardNumber(PaymentSystem? paymentSystem)

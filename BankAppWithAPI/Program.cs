@@ -9,8 +9,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using BankAppWithAPI.Services.Implementations;
 using BankAppWithAPI.Services.Interfaces;
-using BankAppWithAPI.Repositories.Interfaces;
-using BankAppWithAPI.Repositories.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,12 +57,11 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<IHashingRepository, HashingRepository>();
-builder.Services.AddScoped<ILuhnNumberRepository, LuhnNumberRepository>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBankAccountService, BankAccountService>();
 builder.Services.AddScoped<ICardService, CardService>();
+builder.Services.AddScoped<ILuhnNumberService, LuhnNumberService>();
 builder.Services.AddScoped<IOperationService, OperationService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
